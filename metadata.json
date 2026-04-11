@@ -1,0 +1,5 @@
+{
+  "name": "Pool Demon",
+  "description": "A professional-grade billiards scoreboard with match history, shot clock, and game data export.",
+  "requestFramePermissions": []
+}
