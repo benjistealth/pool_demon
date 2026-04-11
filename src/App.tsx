@@ -89,91 +89,14 @@ export default function App() {
     };
   }, []);
 
-  // Unified Navigation Logic
+  // Simplified Navigation Logic - Always visible except when typing on mobile
   useEffect(() => {
-    const { isPhone, isTablet, isDesktop } = deviceInfo;
-    
-    const startHideTimer = () => {
-      if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-      // Auto-hide on ALL views for phones when nav is visible
-      if (isPhone && isNavVisible && !isKeyboardOpen) {
-        navTimeoutRef.current = setTimeout(() => {
-          setIsNavVisible(false);
-        }, 3000);
-      }
-    };
-
-    const showNav = () => {
-      if (isKeyboardOpen) return;
-      setIsNavVisible(true);
-      startHideTimer();
-    };
-
-    const handleInteraction = (e: Event) => {
-      if (isKeyboardOpen) return;
-      
-      // If nav is already visible, reset the timer on any interaction
-      if (isNavVisible) {
-        startHideTimer();
-      }
-
-      // Specific triggers to SHOW the nav if it's hidden
-      if (!isNavVisible && (e.type === 'click' || e.type === 'touchstart' || e.type === 'scroll')) {
-        if (e.type === 'click' || e.type === 'touchstart') {
-          const clientY = e.type === 'click' 
-            ? (e as MouseEvent).clientY 
-            : (e as TouchEvent).touches[0].clientY;
-          
-          // Show if tap in top 8% of screen
-          if (clientY <= window.innerHeight * 0.08) {
-            showNav();
-          }
-        }
-      }
-    };
-
-    let touchStartY = 0;
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-      handleInteraction(e);
-    };
-
-    const handleTouchEnd = (e: TouchEvent) => {
-      const touchEndY = e.changedTouches[0].clientY;
-      // Swipe down from top area (top 100px) to show nav
-      if (touchStartY < 100 && touchEndY > touchStartY + 30) {
-        showNav();
-      }
-    };
-
-    // Initial timer setup
-    startHideTimer();
-
-    // Ensure nav is visible on tablet/desktop or non-phone devices
-    if (!isNavVisible && !isPhone) {
+    if (isKeyboardOpen) {
+      setIsNavVisible(false);
+    } else {
       setIsNavVisible(true);
     }
-
-    window.addEventListener('click', handleInteraction, { passive: true });
-    window.addEventListener('touchstart', handleTouchStart, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd, { passive: true });
-    window.addEventListener('scroll', handleInteraction, { passive: true });
-    
-    if (isDesktop) {
-      window.addEventListener('mousemove', (e) => {
-        if (e.clientY <= window.innerHeight * 0.08) showNav();
-        else if (isNavVisible) startHideTimer();
-      }, { passive: true });
-    }
-
-    return () => {
-      window.removeEventListener('click', handleInteraction);
-      window.removeEventListener('touchstart', handleTouchStart);
-      window.removeEventListener('touchend', handleTouchEnd);
-      window.removeEventListener('scroll', handleInteraction);
-      if (navTimeoutRef.current) clearTimeout(navTimeoutRef.current);
-    };
-  }, [isNavVisible, isKeyboardOpen, view, deviceInfo]);
+  }, [isKeyboardOpen]);
   const [activePicker, setActivePicker] = useState<string | null>(null);
   const [shotClock, setShotClock] = useState(SHOT_CLOCK_DEFAULT);
   const [shotClockDuration, setShotClockDuration] = useState(SHOT_CLOCK_DEFAULT);
@@ -1003,6 +926,9 @@ export default function App() {
   };
 
   useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
     };
@@ -1042,24 +968,70 @@ export default function App() {
           isKeyboardOpen={isKeyboardOpen}
           deviceInfo={deviceInfo}
           navigateToScoreboard={navigateToScoreboard}
+          isShotClockEnabled={isShotClockEnabled}
+          isMatchClockEnabled={isMatchClockEnabled}
+          shotClock={shotClock}
+          shotClockDuration={shotClockDuration}
+          matchClock={matchClock}
+          matchClockDuration={matchClockDuration}
+          isTimerRunning={isTimerRunning}
+          onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
+          onResetTimer={resetTimer}
+          formatTime={formatTime}
         />
 
         <motion.main 
           initial={false}
           animate={{ 
-            paddingTop: (view === 'teams' || view === 'settings')
-              ? `calc(${deviceInfo.isPhone ? '56px' : '80px'} + 8vh)`
-              : (view === 'scoreboard' 
-                  ? (!deviceInfo.isDesktop ? (deviceInfo.isPhone ? 56 : 80) : 16) 
-                  : 0),
-            y: (deviceInfo.isPhone && !isNavVisible && view === 'scoreboard') ? -54 : 0,
+            paddingTop: (view === 'teams' || view === 'settings' || view === 'scoreboard')
+              ? `calc(${deviceInfo.isDesktop ? '96px' : (deviceInfo.isPhone ? '56px' : '80px')} + 2vh)`
+              : 0,
             paddingBottom: 0 
           }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
+          transition={{ 
+            paddingTop: { duration: view === 'scoreboard' ? 0 : 0.4, ease: "easeInOut" },
+            opacity: { duration: 0.4 },
+            default: { duration: view === 'scoreboard' ? 0 : 0.4, ease: "easeInOut" }
+          }}
           className={`relative z-10 min-h-[100dvh] flex flex-col ${view === 'scoreboard' ? 'justify-start sm:justify-center sm:gap-4 lg:gap-6' : 'justify-start pb-24'} px-4 sm:px-6 mx-auto w-full responsive-zoom`}
           style={{ maxWidth: view === 'scoreboard' ? 'var(--gameplay-width)' : 'min(90vw, 985px)' }}
         >
         <AnimatePresence mode="wait">
+          {view === 'scoreboard' && (
+            <div className="fixed inset-0 pointer-events-none z-0 hidden sm:block">
+              <div 
+                className="absolute left-0 inset-y-0 flex items-center justify-center overflow-hidden"
+                style={{ width: 'var(--sidebar-width)' }}
+              >
+                {team1Name && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 0.9, x: 0 }}
+                    className="text-[min(4vw,14px)] sm:text-[28px] lg:text-[40px] font-gothic font-black uppercase tracking-[0.2em] vertical-text rotate-180 h-full flex items-center justify-center"
+                    style={{ color: player1.highlightColor }}
+                  >
+                    {team1Name}
+                  </motion.div>
+                )}
+              </div>
+              <div 
+                className="absolute right-0 inset-y-0 flex items-center justify-center overflow-hidden"
+                style={{ width: 'var(--sidebar-width)' }}
+              >
+                {team2Name && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 0.9, x: 0 }}
+                    className="text-[min(4vw,14px)] sm:text-[28px] lg:text-[40px] font-gothic font-black uppercase tracking-[0.2em] vertical-text h-full flex items-center justify-center"
+                    style={{ color: player2.highlightColor }}
+                  >
+                    {team2Name}
+                  </motion.div>
+                )}
+              </div>
+            </div>
+          )}
+
           {view === 'scoreboard' && (
             <ScoreboardView 
               player1={player1}

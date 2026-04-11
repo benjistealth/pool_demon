@@ -14,8 +14,26 @@ interface ScoreCardProps {
 }
 
 const SkullContainer = ({ color, children }: { color: string, children: React.ReactNode }) => (
-  <div className="relative w-full aspect-[4/5] max-w-[400px] mx-auto group">
-    <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+  <div className="relative w-full aspect-[1/1] sm:aspect-[4/5] max-w-[400px] mx-auto group">
+    <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] sm:hidden">
+      <path 
+        d="M50 5 C25 5 10 20 10 40 C10 55 15 60 20 65 L20 85 C20 92 30 95 50 95 C70 95 80 92 80 85 L80 65 C85 60 90 55 90 40 C90 20 75 5 50 5 Z" 
+        fill="#0a0a0a"
+        fillOpacity="0.6"
+        stroke={color}
+        strokeWidth="2"
+        className="transition-all duration-500"
+      />
+      <g stroke={color} strokeWidth="1.5" opacity="0.3">
+        <line x1="35" y1="80" x2="35" y2="92" />
+        <line x1="42" y1="80" x2="42" y2="92" />
+        <line x1="50" y1="80" x2="50" y2="92" />
+        <line x1="58" y1="80" x2="58" y2="92" />
+        <line x1="65" y1="80" x2="65" y2="92" />
+        <line x1="30" y1="86" x2="70" y2="86" />
+      </g>
+    </svg>
+    <svg viewBox="0 0 100 125" className="w-full h-full drop-shadow-[0_0_15px_rgba(0,0,0,0.5)] hidden sm:block">
       <path 
         d="M50 5 C20 5 5 25 5 50 C5 65 15 75 20 80 L20 105 C20 115 30 120 50 120 C70 120 80 115 80 105 L80 80 C85 75 95 65 95 50 C95 25 80 5 50 5 Z" 
         fill="#0a0a0a"
@@ -24,7 +42,6 @@ const SkullContainer = ({ color, children }: { color: string, children: React.Re
         strokeWidth="1.5"
         className="transition-all duration-500"
       />
-      {/* Teeth Lines */}
       <g stroke={color} strokeWidth="1" opacity="0.3">
         <line x1="35" y1="100" x2="35" y2="115" />
         <line x1="42" y1="100" x2="42" y2="115" />
@@ -65,12 +82,12 @@ export const ScoreCard: React.FC<ScoreCardProps> = ({
                 onChange={(e) => onNameChange(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
                 placeholder={`PLAYER ${idx + 1}`}
-                className="w-full bg-black/40 border-b border-white/20 text-center text-sm sm:text-lg lg:text-xl font-gothic focus:outline-none uppercase tracking-widest placeholder:text-white/20"
+                className="w-full bg-black/40 border-b border-white/20 text-center text-base sm:text-xl lg:text-2xl font-gothic focus:outline-none uppercase tracking-widest placeholder:text-white/20"
                 style={{ color: player.highlightColor }}
               />
             ) : (
               player.name && (
-                <h2 className="text-sm sm:text-xl lg:text-2xl font-gothic uppercase truncate tracking-widest" style={{ color: player.highlightColor }}>
+                <h2 className="text-base sm:text-2xl lg:text-3xl font-gothic uppercase truncate tracking-widest" style={{ color: player.highlightColor }}>
                   {player.name}
                 </h2>
               )

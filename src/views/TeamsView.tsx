@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Users, Download, Upload, Trash2, X, Plus, Trophy } from 'lucide-react';
 import { Player, MatchHistoryEntry } from '../types';
@@ -45,13 +45,76 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
   clearMatchResult,
   formatTime
 }) => {
+  const battlesRef = useRef<HTMLDivElement>(null);
+  const scrollInitiated = useRef(false);
+  const [exportFormat, setExportFormat] = React.useState<'CSV' | 'JSON'>('CSV');
+
+  // Reset scroll to top immediately on mount to prevent jumps
+  React.useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    const hasPlayers = team1Players.some(p => p.trim() !== '') || team2Players.some(p => p.trim() !== '');
+    
+    if (hasPlayers && !scrollInitiated.current) {
+      // Wait for layout and App.tsx transitions to fully stabilize
+      const timer = setTimeout(() => {
+        if (battlesRef.current) {
+          const element = battlesRef.current;
+          
+          // Ensure we are starting from a clean state
+          window.scrollTo(0, 0);
+          
+          // Use getBoundingClientRect for the most accurate absolute position
+          const rect = element.getBoundingClientRect();
+          const absoluteY = rect.top + window.pageYOffset;
+          
+          // Refined offset: We adjust the targetY to be 11% of viewport height.
+          // This conserves more vertical space while keeping the title visible below the top bar.
+          const targetY = absoluteY - (window.innerHeight * 0.11);
+          
+          const startY = 0;
+          const distance = targetY - startY;
+          
+          if (Math.abs(distance) < 10) return;
+
+          scrollInitiated.current = true;
+          const duration = 1200;
+          let startTime: number | null = null;
+
+          const animation = (currentTime: number) => {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            
+            const ease = progress < 0.5 
+              ? 4 * progress * progress * progress 
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            window.scrollTo(0, startY + distance * ease);
+
+            if (timeElapsed < duration) {
+              requestAnimationFrame(animation);
+            }
+          };
+
+          requestAnimationFrame(animation);
+        }
+      }, 600);
+      return () => clearTimeout(timer);
+    } else if (!hasPlayers) {
+      window.scrollTo(0, 0);
+    }
+  }, [team1Players, team2Players]);
+
   return (
     <motion.div
       key="teams"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-12 pb-20"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="space-y-12 pb-20 min-h-screen"
     >
       <div 
         className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 transition-all duration-500"
@@ -64,9 +127,47 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
           <h2 className="text-4xl font-black uppercase tracking-tight text-white">Team Setup</h2>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Configure your session players</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-3 bg-black/40 px-3 py-1.5 rounded-xl border border-slate-800">
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input 
+                type="radio" 
+                name="exportFormat" 
+                value="CSV" 
+                checked={exportFormat === 'CSV'}
+                onChange={() => setExportFormat('CSV')}
+                className="hidden"
+              />
+              <div 
+                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'CSV' ? 'border-transparent' : 'border-slate-600'}`}
+                style={{ backgroundColor: exportFormat === 'CSV' ? player2.highlightColor : 'transparent' }}
+              >
+                {exportFormat === 'CSV' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+              </div>
+              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'CSV' ? 'text-white' : 'text-slate-500'}`}>CSV</span>
+            </label>
+            <div className="w-px h-3 bg-slate-800" />
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <input 
+                type="radio" 
+                name="exportFormat" 
+                value="JSON" 
+                checked={exportFormat === 'JSON'}
+                onChange={() => setExportFormat('JSON')}
+                className="hidden"
+              />
+              <div 
+                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'JSON' ? 'border-transparent' : 'border-slate-600'}`}
+                style={{ backgroundColor: exportFormat === 'JSON' ? player2.highlightColor : 'transparent' }}
+              >
+                {exportFormat === 'JSON' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+              </div>
+              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'JSON' ? 'text-white' : 'text-slate-500'}`}>JSON</span>
+            </label>
+          </div>
+
           <button 
-            onClick={downloadData}
+            onClick={exportFormat === 'CSV' ? downloadData : downloadJSON}
             className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all font-bold text-sm border-2"
             style={{ 
               borderColor: player2.highlightColor,
@@ -75,19 +176,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
             }}
           >
             <Download className="w-4 h-4" style={{ color: player2.highlightColor }} />
-            CSV
-          </button>
-          <button 
-            onClick={downloadJSON}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all font-bold text-sm border-2"
-            style={{ 
-              borderColor: player1.highlightColor,
-              color: player1.highlightColor,
-              backgroundColor: player1.highlightColor + '11'
-            }}
-          >
-            <Download className="w-4 h-4" style={{ color: player1.highlightColor }} />
-            JSON
+            Export
           </button>
           <button 
             onClick={uploadData}
@@ -146,7 +235,6 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                   </div>
                   <input 
                     value={player}
-                    autoFocus={idx === team1Players.length - 1 && player === ''}
                     onChange={(e) => {
                       const newPlayers = [...team1Players];
                       newPlayers[idx] = e.target.value.toUpperCase();
@@ -221,7 +309,6 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                   </div>
                   <input 
                     value={player}
-                    autoFocus={idx === team2Players.length - 1 && player === ''}
                     onChange={(e) => {
                       const newPlayers = [...team2Players];
                       newPlayers[idx] = e.target.value.toUpperCase();
@@ -269,8 +356,12 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
       </div>
 
       {/* Matchups Table */}
-      <div className="space-y-4 pt-4 border-t-2" style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}>
-        <div className="flex flex-col items-center text-center">
+      <div 
+        ref={battlesRef}
+        className="space-y-4 pt-4 border-t-2" 
+        style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
+      >
+        <div className="flex flex-col items-center text-center min-h-[160px] justify-center">
           <img 
             src={bloodyBattlesImg} 
             alt="Bloody Battles" 

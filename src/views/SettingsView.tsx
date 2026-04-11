@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Palette, Layout, Maximize, RotateCcw } from 'lucide-react';
 import { Player } from '../types';
@@ -48,6 +48,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   pauseTimer,
   setShowRestoreDefaultsConfirm
 }) => {
+  React.useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <motion.div
       key="settings"
