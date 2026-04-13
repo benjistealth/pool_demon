@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, Check } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface ColorPickerProps {
   label: string;
@@ -115,30 +116,30 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange
               {hexGrid.map((hex, idx) => {
                 const isActive = value.toUpperCase() === hex.color.toUpperCase();
                 return (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      onChange(hex.color);
-                      onToggle(false);
-                    }}
-                    className="absolute group"
-                    style={{
-                      left: `calc(50% + ${hex.posX}px)`,
-                      top: `calc(50% + ${hex.posY}px)`,
-                      width: `${hexSize * 2.2}px`,
-                      height: `${hexSize * 2.2}px`,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                    title={hex.color}
-                  >
-                    <div 
-                      className={`w-full h-full transition-all duration-200 group-hover:scale-125 group-hover:z-10 ${isActive ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-slate-900 z-20' : ''}`}
-                      style={{ 
-                        backgroundColor: hex.color,
-                        clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
+                  <Tooltip key={idx} text={hex.color} position="top">
+                    <button
+                      onClick={() => {
+                        onChange(hex.color);
+                        onToggle(false);
                       }}
-                    />
-                  </button>
+                      className="absolute group"
+                      style={{
+                        left: `calc(50% + ${hex.posX}px)`,
+                        top: `calc(50% + ${hex.posY}px)`,
+                        width: `${hexSize * 2.2}px`,
+                        height: `${hexSize * 2.2}px`,
+                        transform: 'translate(-50%, -50%)',
+                      }}
+                    >
+                      <div 
+                        className={`w-full h-full transition-all duration-200 group-hover:scale-125 group-hover:z-10 ${isActive ? 'scale-110 ring-2 ring-white ring-offset-2 ring-offset-slate-900 z-20' : ''}`}
+                        style={{ 
+                          backgroundColor: hex.color,
+                          clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)'
+                        }}
+                      />
+                    </button>
+                  </Tooltip>
                 );
               })}
             </div>
@@ -148,16 +149,16 @@ export const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Presets</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {colors.slice(0, 12).map((c) => (
-                    <button
-                      key={c.value}
-                      onClick={() => {
-                        onChange(c.value);
-                        onToggle(false);
-                      }}
-                      className={`w-6 h-6 rounded-full border-2 transition-all ${value.toUpperCase() === c.value.toUpperCase() ? 'border-white scale-110' : 'border-transparent hover:scale-110'}`}
-                      style={{ backgroundColor: c.value }}
-                      title={c.name}
-                    />
+                    <Tooltip key={c.value} text={c.name} position="top">
+                      <button
+                        onClick={() => {
+                          onChange(c.value);
+                          onToggle(false);
+                        }}
+                        className={`w-6 h-6 rounded-full border-2 transition-all ${value.toUpperCase() === c.value.toUpperCase() ? 'border-white scale-110' : 'border-transparent hover:scale-110'}`}
+                        style={{ backgroundColor: c.value }}
+                      />
+                    </Tooltip>
                   ))}
                 </div>
               </div>

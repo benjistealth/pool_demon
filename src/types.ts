@@ -28,6 +28,8 @@ export interface AppState {
     isShotClockEnabled: boolean;
     matchClockDuration: number;
     isMatchClockEnabled: boolean;
+    matchClock: number;
+    shotClock: number;
   };
   teams: {
     team1Name: string;

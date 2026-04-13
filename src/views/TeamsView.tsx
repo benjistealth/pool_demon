@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
 import { Users, Download, Upload, Trash2, X, Plus, Trophy } from 'lucide-react';
 import { Player, MatchHistoryEntry } from '../types';
+import { Tooltip } from '../components/Tooltip';
+import { FittingText } from '../components/FittingText';
 import bloodyBattlesImg from '../bloody_battles.png';
 
 interface TeamsViewProps {
@@ -127,9 +129,9 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
           <h2 className="text-4xl font-black uppercase tracking-tight text-white">Team Setup</h2>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Configure your session players</p>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-3 bg-black/40 px-3 py-1.5 rounded-xl border border-slate-800">
-            <label className="flex items-center gap-2 cursor-pointer group">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 bg-black/40 px-2 py-1 rounded-lg border border-slate-800">
+            <label className="flex items-center gap-1.5 cursor-pointer group">
               <input 
                 type="radio" 
                 name="exportFormat" 
@@ -139,15 +141,15 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                 className="hidden"
               />
               <div 
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'CSV' ? 'border-transparent' : 'border-slate-600'}`}
+                className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'CSV' ? 'border-transparent' : 'border-slate-600'}`}
                 style={{ backgroundColor: exportFormat === 'CSV' ? player2.highlightColor : 'transparent' }}
               >
-                {exportFormat === 'CSV' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                {exportFormat === 'CSV' && <div className="w-1 h-1 bg-black rounded-full" />}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'CSV' ? 'text-white' : 'text-slate-500'}`}>CSV</span>
+              <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'CSV' ? 'text-white' : 'text-slate-500'}`}>CSV</span>
             </label>
-            <div className="w-px h-3 bg-slate-800" />
-            <label className="flex items-center gap-2 cursor-pointer group">
+            <div className="w-px h-2.5 bg-slate-800" />
+            <label className="flex items-center gap-1.5 cursor-pointer group">
               <input 
                 type="radio" 
                 name="exportFormat" 
@@ -157,55 +159,63 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                 className="hidden"
               />
               <div 
-                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'JSON' ? 'border-transparent' : 'border-slate-600'}`}
+                className={`w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all ${exportFormat === 'JSON' ? 'border-transparent' : 'border-slate-600'}`}
                 style={{ backgroundColor: exportFormat === 'JSON' ? player2.highlightColor : 'transparent' }}
               >
-                {exportFormat === 'JSON' && <div className="w-1.5 h-1.5 bg-black rounded-full" />}
+                {exportFormat === 'JSON' && <div className="w-1 h-1 bg-black rounded-full" />}
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'JSON' ? 'text-white' : 'text-slate-500'}`}>JSON</span>
+              <span className={`text-[9px] font-black uppercase tracking-widest transition-colors ${exportFormat === 'JSON' ? 'text-white' : 'text-slate-500'}`}>JSON</span>
             </label>
           </div>
 
-          <button 
-            onClick={exportFormat === 'CSV' ? downloadData : downloadJSON}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all font-bold text-sm border-2"
-            style={{ 
-              borderColor: player2.highlightColor,
-              color: player2.highlightColor,
-              backgroundColor: player2.highlightColor + '11'
-            }}
-          >
-            <Download className="w-4 h-4" style={{ color: player2.highlightColor }} />
-            Export
-          </button>
-          <button 
-            onClick={uploadData}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition-all font-bold text-sm border-2"
-            style={{ 
-              borderColor: player2.highlightColor,
-              color: player2.highlightColor,
-              backgroundColor: player2.highlightColor + '11'
-            }}
-          >
-            <Upload className="w-4 h-4" style={{ color: player2.highlightColor }} />
-            Import
-          </button>
-          <button 
-            onClick={() => setShowClearTeamsConfirm(true)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-xl transition-all border-2"
-            style={{ 
-              borderColor: player2.highlightColor,
-              color: player2.highlightColor,
-              backgroundColor: player2.highlightColor + '11'
-            }}
-          >
-            <Trash2 className="w-4 h-4" style={{ color: player2.highlightColor }} />
-            Clear All
-          </button>
+          <div className="flex items-center gap-2">
+            <Tooltip text="Export Match History" position="bottom">
+              <button 
+                onClick={exportFormat === 'CSV' ? downloadData : downloadJSON}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all font-bold text-xs border md:text-sm md:px-4 md:py-2 md:rounded-xl md:border-2"
+                style={{ 
+                  borderColor: player2.highlightColor,
+                  color: player2.highlightColor,
+                  backgroundColor: player2.highlightColor + '11'
+                }}
+              >
+                <Download className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: player2.highlightColor }} />
+                Export
+              </button>
+            </Tooltip>
+            <Tooltip text="Import Match History" position="bottom">
+              <button 
+                onClick={uploadData}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all font-bold text-xs border md:text-sm md:px-4 md:py-2 md:rounded-xl md:border-2"
+                style={{ 
+                  borderColor: player2.highlightColor,
+                  color: player2.highlightColor,
+                  backgroundColor: player2.highlightColor + '11'
+                }}
+              >
+                <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: player2.highlightColor }} />
+                Import
+              </button>
+            </Tooltip>
+            <Tooltip text="Clear All Data" position="bottom">
+              <button 
+                onClick={() => setShowClearTeamsConfirm(true)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-xl transition-all border-2"
+                style={{ 
+                  borderColor: player2.highlightColor,
+                  color: player2.highlightColor,
+                  backgroundColor: player2.highlightColor + '11'
+                }}
+              >
+                <Trash2 className="w-4 h-4" style={{ color: player2.highlightColor }} />
+                Clear All
+              </button>
+            </Tooltip>
+          </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 landscape:grid-cols-2 gap-6 sm:gap-10">
         {/* Team 1 Setup */}
         <div className="space-y-8">
           <div className="space-y-4">
@@ -245,37 +255,41 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                     style={{ borderColor: player1.highlightColor + '22' }}
                     placeholder={`PLAYER ${idx + 1}`}
                   />
-                  <button 
-                    onClick={() => {
-                      const newPlayers = team1Players.filter((_, i) => i !== idx);
-                      updateTeamData(team1Name, newPlayers, team2Name, team2Players);
-                    }}
-                    className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <Tooltip text="Remove Player" position="left">
+                    <button 
+                      onClick={() => {
+                        const newPlayers = team1Players.filter((_, i) => i !== idx);
+                        updateTeamData(team1Name, newPlayers, team2Name, team2Players);
+                      }}
+                      className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
                 </div>
               ))}
-              <button 
-                onClick={() => updateTeamData(team1Name, [...team1Players, ''], team2Name, team2Players)}
-                className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
-                style={{ 
-                  borderColor: player1.highlightColor + '33', 
-                  color: player1.highlightColor,
-                  backgroundColor: 'transparent'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = player1.highlightColor + '11';
-                  e.currentTarget.style.borderColor = player1.highlightColor + '66';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = player1.highlightColor + '33';
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                Add Player
-              </button>
+              <Tooltip text="Add New Player to Team 1" position="top">
+                <button 
+                  onClick={() => updateTeamData(team1Name, [...team1Players, ''], team2Name, team2Players)}
+                  className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
+                  style={{ 
+                    borderColor: player1.highlightColor + '33', 
+                    color: player1.highlightColor,
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = player1.highlightColor + '11';
+                    e.currentTarget.style.borderColor = player1.highlightColor + '66';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.borderColor = player1.highlightColor + '33';
+                  }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Player
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -319,37 +333,41 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                     style={{ borderColor: player2.highlightColor + '22' }}
                     placeholder={`PLAYER ${idx + 1}`}
                   />
-                  <button 
-                    onClick={() => {
-                      const newPlayers = team2Players.filter((_, i) => i !== idx);
-                      updateTeamData(team1Name, team1Players, team2Name, newPlayers);
-                    }}
-                    className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
+                  <Tooltip text="Remove Player" position="left">
+                    <button 
+                      onClick={() => {
+                        const newPlayers = team2Players.filter((_, i) => i !== idx);
+                        updateTeamData(team1Name, team1Players, team2Name, newPlayers);
+                      }}
+                      className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </Tooltip>
                 </div>
               ))}
-              <button 
-                onClick={() => updateTeamData(team1Name, team1Players, team2Name, [...team2Players, ''])}
-                className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
-                style={{ 
-                  borderColor: player2.highlightColor + '33', 
-                  color: player2.highlightColor,
-                  backgroundColor: 'transparent'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = player2.highlightColor + '11';
-                  e.currentTarget.style.borderColor = player2.highlightColor + '66';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = player2.highlightColor + '33';
-                }}
-              >
-                <Plus className="w-4 h-4" />
-                Add Player
-              </button>
+              <Tooltip text="Add New Player to Team 2" position="top">
+                <button 
+                  onClick={() => updateTeamData(team1Name, team1Players, team2Name, [...team2Players, ''])}
+                  className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
+                  style={{ 
+                    borderColor: player2.highlightColor + '33', 
+                    color: player2.highlightColor,
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = player2.highlightColor + '11';
+                    e.currentTarget.style.borderColor = player2.highlightColor + '66';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.borderColor = player2.highlightColor + '33';
+                  }}
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Player
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -372,22 +390,35 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
         </div>
         <div className="bg-black/40 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[150px] table-fixed">
+              <colgroup>
+                <col className="w-[10%]" />
+                <col className="w-[22%]" />
+                <col className="w-[6%]" />
+                <col className="w-[22%]" />
+                <col className="w-[18%]" />
+                <col className="w-[12%]" />
+                <col className="w-[10%]" />
+              </colgroup>
               <thead>
-                <tr className="bg-black/50 border-b border-slate-800">
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Match</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">{team1Name || 'TEAM A'}</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-center">VS</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">{team2Name || 'TEAM B'}</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Last Result</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Clock</th>
-                  <th className="px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 text-right">Action</th>
+                <tr className="bg-blue-600/20 border-b border-slate-800">
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">MATCH (V5)</th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">
+                    <FittingText text={team1Name || 'TEAM A'} maxFontSize={10} minFontSize={4} className="justify-start" />
+                  </th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500 text-center">VS</th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">
+                    <FittingText text={team2Name || 'TEAM B'} maxFontSize={10} minFontSize={4} className="justify-start" />
+                  </th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">Last Result</th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">Clock</th>
+                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500 text-right">Action</th>
                 </tr>
               </thead>
               <tbody>
                 {Math.max(team1Players.length, team2Players.length) === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-slate-500 italic">Add players to generate matchups.</td>
+                    <td colSpan={7} className="px-2 sm:px-6 py-4 sm:py-12 text-center text-slate-500 italic text-[10px] md:text-base">Add players to generate matchups.</td>
                   </tr>
                 ) : (
                   <>
@@ -407,53 +438,54 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                           onClick={() => selectTeamMatch(idx)}
                           className={`group cursor-pointer transition-colors hover:bg-emerald-500/5 ${selectedMatchIndex === idx ? 'bg-emerald-500/10' : ''}`}
                         >
-                          <td className="px-6 py-4 text-xs font-black text-slate-600">#{idx + 1}</td>
-                          <td className="px-6 py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors">
-                            {p1 || <span className="text-slate-700 italic">EMPTY</span>}
+                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-xs font-black text-slate-600 truncate">#{idx + 1}</td>
+                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors text-[4px] md:text-base truncate">
+                            {p1 ? <FittingText text={p1} maxFontSize={16} minFontSize={4} className="justify-start" /> : <span className="text-slate-700 italic">EMPTY</span>}
                           </td>
-                          <td className="px-6 py-4 text-center text-slate-700 font-black">VS</td>
-                          <td className="px-6 py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors">
-                            {p2 || <span className="text-slate-700 italic">EMPTY</span>}
+                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-center text-slate-700 font-black text-[4px] md:text-base">VS</td>
+                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors text-[4px] md:text-base truncate">
+                            {p2 ? <FittingText text={p2} maxFontSize={16} minFontSize={4} className="justify-start" /> : <span className="text-slate-700 italic">EMPTY</span>}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-0 sm:px-6 py-2 sm:py-4">
                             {lastMatch ? (
-                              <div className="flex items-center gap-2">
-                                <span className={`text-xs font-bold px-2 py-0.5 rounded ${lastMatch.winner === p1Name ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                                  {lastMatch.score1} - {lastMatch.score2}
+                              <div className="flex items-center gap-0.5 sm:gap-2">
+                                <span className={`text-[4px] md:text-xs font-bold px-0.5 sm:px-2 py-0.5 rounded ${lastMatch.winner === p1Name ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
+                                  {lastMatch.score1}-{lastMatch.score2}
                                 </span>
-                                <span className="text-[10px] text-slate-500 font-bold uppercase">{new Date(lastMatch.date).toLocaleDateString('en-GB')}</span>
+                                <span className="text-[3px] md:text-[10px] text-slate-500 font-bold uppercase truncate">{new Date(lastMatch.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</span>
                               </div>
                             ) : (
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-600">
-                                  0 - 0
+                              <div className="flex items-center gap-0.5 sm:gap-2">
+                                <span className="text-[4px] md:text-xs font-bold px-0.5 sm:px-2 py-0.5 rounded bg-slate-800 text-slate-600">
+                                  0-0
                                 </span>
-                                <span className="text-[10px] text-slate-600 font-bold uppercase">READY</span>
+                                <span className="text-[3px] md:text-[10px] text-slate-600 font-bold uppercase">READY</span>
                               </div>
                             )}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-0 sm:px-6 py-2 sm:py-4">
                             {lastMatch && (lastMatch.shotClockSetting || lastMatch.matchClockRemaining !== undefined) ? (
-                              <div className="flex flex-col gap-0.5">
-                                {lastMatch.shotClockSetting && <span className="text-[9px] font-bold text-slate-500">SHOT: {lastMatch.shotClockSetting}S</span>}
-                                {lastMatch.matchClockRemaining !== undefined && <span className="text-[9px] font-bold text-slate-500">MATCH: {formatTime(lastMatch.matchClockRemaining)}</span>}
+                              <div className="flex flex-col gap-0">
+                                {lastMatch.shotClockSetting && <span className="text-[3px] md:text-[9px] font-bold text-slate-500">S:{lastMatch.shotClockSetting}</span>}
+                                {lastMatch.matchClockRemaining !== undefined && <span className="text-[3px] md:text-[9px] font-bold text-slate-500">M:{formatTime(lastMatch.matchClockRemaining)}</span>}
                               </div>
                             ) : (
-                              <span className="text-[10px] text-slate-600 font-bold uppercase">-</span>
+                              <span className="text-[4px] md:text-[10px] text-slate-600 font-bold uppercase">-</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-right">
                             {lastMatch && (
-                              <button 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  clearMatchResult(p1Name, p2Name);
-                                }}
-                                className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                                title="Clear Result"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
+                              <Tooltip text="Clear Result" position="left">
+                                <button 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    clearMatchResult(p1Name, p2Name);
+                                  }}
+                                  className="p-1 sm:p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+                                >
+                                  <Trash2 className="w-3 md:w-4 h-3 md:h-4" />
+                                </button>
+                              </Tooltip>
                             )}
                           </td>
                         </tr>
@@ -461,32 +493,32 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                     })}
                     {/* Totals Row */}
                     <tr className="bg-slate-800/80 border-t-2 border-slate-700 font-black">
-                      <td className="px-6 py-5 text-[10px] uppercase tracking-[0.2em] text-emerald-500">Total Score</td>
-                      <td className="px-6 py-5">
+                      <td className="px-2 sm:px-6 py-3 sm:py-5 text-[7px] md:text-[10px] uppercase tracking-[0.2em] text-emerald-500">Total Score</td>
+                      <td className="px-2 sm:px-6 py-3 sm:py-5">
                         <div className="flex flex-col">
-                          <span className="text-2xl text-emerald-400 tabular-nums">{teamTotals.t1}</span>
-                          <span className="text-[8px] text-slate-500 uppercase tracking-tighter">{team1Name}</span>
+                          <span className="text-lg md:text-2xl text-emerald-400 tabular-nums">{teamTotals.t1}</span>
+                          <span className="text-[7px] md:text-[8px] text-slate-500 uppercase tracking-tighter">{team1Name}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-5 text-center text-slate-700 font-black">SUM</td>
-                      <td className="px-6 py-5">
+                      <td className="px-2 sm:px-6 py-3 sm:py-5 text-center text-slate-700 font-black text-[10px] md:text-base">SUM</td>
+                      <td className="px-2 sm:px-6 py-3 sm:py-5">
                         <div className="flex flex-col">
-                          <span className="text-2xl text-emerald-400 tabular-nums">{teamTotals.t2}</span>
-                          <span className="text-[8px] text-slate-500 uppercase tracking-tighter">{team2Name}</span>
+                          <span className="text-lg md:text-2xl text-emerald-400 tabular-nums">{teamTotals.t2}</span>
+                          <span className="text-[7px] md:text-[8px] text-slate-500 uppercase tracking-tighter">{team2Name}</span>
                         </div>
                       </td>
-                      <td colSpan={3} className="px-6 py-5 bg-slate-900/50">
-                        <div className="flex items-center justify-end gap-4">
+                      <td colSpan={3} className="px-2 sm:px-6 py-3 sm:py-5 bg-slate-900/50">
+                        <div className="flex items-center justify-end gap-2 md:gap-4">
                           <div className="flex flex-col items-end">
-                            <span className="text-[10px] text-slate-500 uppercase font-bold">Overall Lead</span>
-                            <span className="text-sm font-black text-slate-100">
+                            <span className="text-[7px] md:text-[10px] text-slate-500 uppercase font-bold">Overall Lead</span>
+                            <span className="text-[10px] md:text-sm font-black text-slate-100">
                               {teamTotals.t1 === teamTotals.t2 ? 'TIED' : 
                                teamTotals.t1 > teamTotals.t2 ? `${team1Name} (+${teamTotals.t1 - teamTotals.t2})` : 
                                `${team2Name} (+${teamTotals.t2 - teamTotals.t1})`}
                             </span>
                           </div>
-                          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                            <Trophy className="w-5 h-5 text-emerald-400" />
+                          <div className="w-6 md:w-10 h-6 md:h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                            <Trophy className="w-3 md:w-5 h-3 md:h-5 text-emerald-400" />
                           </div>
                         </div>
                       </td>
@@ -496,6 +528,22 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
               </tbody>
             </table>
           </div>
+        </div>
+        <div className="flex justify-center pt-4 md:hidden">
+          <Tooltip text="Clear All Data" position="top">
+            <button 
+              onClick={() => setShowClearTeamsConfirm(true)}
+              className="flex items-center gap-2 px-6 py-3 text-sm font-black rounded-2xl transition-all border-2 uppercase tracking-widest shadow-xl"
+              style={{ 
+                borderColor: player2.highlightColor,
+                color: player2.highlightColor,
+                backgroundColor: player2.highlightColor + '11'
+              }}
+            >
+              <Trash2 className="w-5 h-5" style={{ color: player2.highlightColor }} />
+              Clear All Data
+            </button>
+          </Tooltip>
         </div>
       </div>
     </motion.div>

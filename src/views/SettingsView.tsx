@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Palette, Layout, Maximize, RotateCcw } from 'lucide-react';
 import { Player } from '../types';
 import { ColorPicker } from '../components/ColorPicker';
+import { Tooltip } from '../components/Tooltip';
 import { THEME_COLORS } from '../constants';
 
 interface SettingsViewProps {
@@ -116,7 +117,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 />
                 <div className="space-y-6">
                   <ColorPicker
-                    label="Player Highlighting"
+                    label="Skull Vibe"
                     value={p.highlightColor}
                     onChange={(color) => idx === 0 ? setPlayer1({ highlightColor: color }) : setPlayer2({ highlightColor: color })}
                     colors={THEME_COLORS}
@@ -147,16 +148,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Enable Match Clock</p>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">A master countdown for the entire match.</p>
               </div>
-              <button 
-                onClick={() => {
-                  setIsMatchClockEnabled(!isMatchClockEnabled);
-                  if (isMatchClockEnabled) pauseTimer();
-                }}
-                className={`w-14 h-7 rounded-full transition-colors relative`}
-                style={{ backgroundColor: isMatchClockEnabled ? player1.highlightColor : '#334155' }}
-              >
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${isMatchClockEnabled ? 'left-8' : 'left-1'}`} />
-              </button>
+              <Tooltip text={isMatchClockEnabled ? "Disable Match Clock" : "Enable Match Clock"} position="left">
+                <button 
+                  onClick={() => {
+                    setIsMatchClockEnabled(!isMatchClockEnabled);
+                    if (isMatchClockEnabled) pauseTimer();
+                  }}
+                  className={`w-14 h-7 rounded-full transition-colors relative`}
+                  style={{ backgroundColor: isMatchClockEnabled ? player1.highlightColor : '#334155' }}
+                >
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${isMatchClockEnabled ? 'left-8' : 'left-1'}`} />
+                </button>
+              </Tooltip>
             </div>
  
             {isMatchClockEnabled && (
@@ -184,13 +187,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                   <span>30m</span>
                   <span>60m</span>
                 </div>
-                <button 
-                  onClick={resetMatchClock}
-                  className="w-full py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-700"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  Reset Match Clock
-                </button>
+                <Tooltip text="Reset Match Clock to Start" position="top">
+                  <button 
+                    onClick={resetMatchClock}
+                    className="w-full py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-700"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Reset Match Clock
+                  </button>
+                </Tooltip>
               </div>
             )}
           </div>
@@ -212,16 +217,18 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Enable Shot Clock</p>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Toggle the visibility and timer on the scoreboard.</p>
               </div>
-              <button 
-                onClick={() => {
-                  setIsShotClockEnabled(!isShotClockEnabled);
-                  if (isShotClockEnabled) pauseTimer();
-                }}
-                className={`w-14 h-7 rounded-full transition-colors relative`}
-                style={{ backgroundColor: isShotClockEnabled ? player2.highlightColor : '#334155' }}
-              >
-                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${isShotClockEnabled ? 'left-8' : 'left-1'}`} />
-              </button>
+              <Tooltip text={isShotClockEnabled ? "Disable Shot Clock" : "Enable Shot Clock"} position="left">
+                <button 
+                  onClick={() => {
+                    setIsShotClockEnabled(!isShotClockEnabled);
+                    if (isShotClockEnabled) pauseTimer();
+                  }}
+                  className={`w-14 h-7 rounded-full transition-colors relative`}
+                  style={{ backgroundColor: isShotClockEnabled ? player2.highlightColor : '#334155' }}
+                >
+                  <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${isShotClockEnabled ? 'left-8' : 'left-1'}`} />
+                </button>
+              </Tooltip>
             </div>
  
             {isShotClockEnabled && (
@@ -270,13 +277,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Restore Default Settings</p>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Resets all color selections to default.</p>
               </div>
-              <button 
-                onClick={() => setShowRestoreDefaultsConfirm(true)}
-                className="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-700"
-              >
-                <RotateCcw className="w-4 h-4" />
-                Restore Defaults
-              </button>
+              <Tooltip text="Reset Colors to Default" position="top">
+                <button 
+                  onClick={() => setShowRestoreDefaultsConfirm(true)}
+                  className="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 border border-slate-700"
+                >
+                  <RotateCcw className="w-4 h-4" />
+                  Restore Defaults
+                </button>
+              </Tooltip>
             </div>
           </div>
         </section>

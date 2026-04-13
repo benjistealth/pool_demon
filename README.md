@@ -1,7 +1,11 @@
-Firery bloody pool scoring web app
+POOL DEMON pool scoring game for teams and singles with data export, data persistence and custom colours
+This app has a gnarly flamey bloody theme, just for fun, but the real work has been in getting functionality smooth on all device types.
 
 
-try it here :
+Still work in progress......
 
-git@github.com:benjistealth/pool_demon.git
+
+Wanna yt it ?  
+
+https://benjistealth.github.io/pool_demon/
 

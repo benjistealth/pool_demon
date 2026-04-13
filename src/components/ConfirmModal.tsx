@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, X } from 'lucide-react';
+import { Tooltip } from './Tooltip';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -57,31 +58,37 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
-                <button
-                  onClick={onClose}
-                  className="flex-1 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl font-black uppercase tracking-widest text-xs transition-all border border-slate-700"
-                >
-                  {cancelText}
-                </button>
-                <button
-                  onClick={() => {
-                    onConfirm();
-                    onClose();
-                  }}
-                  className="flex-1 px-6 py-4 text-slate-950 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg"
-                  style={{ backgroundColor: themeColor }}
-                >
-                  {confirmText}
-                </button>
+                <Tooltip text="Go Back" position="top">
+                  <button
+                    onClick={onClose}
+                    className="flex-1 px-6 py-4 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-2xl font-black uppercase tracking-widest text-xs transition-all border border-slate-700"
+                  >
+                    {cancelText}
+                  </button>
+                </Tooltip>
+                <Tooltip text="Proceed with Action" position="top">
+                  <button
+                    onClick={() => {
+                      onConfirm();
+                      onClose();
+                    }}
+                    className="flex-1 px-6 py-4 text-slate-950 rounded-2xl font-black uppercase tracking-widest text-xs transition-all shadow-lg"
+                    style={{ backgroundColor: themeColor }}
+                  >
+                    {confirmText}
+                  </button>
+                </Tooltip>
               </div>
             </div>
 
-            <button 
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white transition-colors"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <Tooltip text="Close" position="left">
+              <button 
+                onClick={onClose}
+                className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </Tooltip>
           </motion.div>
         </div>
       )}

@@ -27,6 +27,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Player, MatchHistoryEntry, AppState } from './types';
 import { THEME_COLORS, DEFAULT_P1_COLOR, DEFAULT_P2_COLOR } from './constants';
 import { Navigation } from './components/Navigation';
+import { Tooltip } from './components/Tooltip';
+import { FittingText } from './components/FittingText';
 import background from './background.png';
 import { ScoreboardView } from './views/ScoreboardView';
 import { TeamsView } from './views/TeamsView';
@@ -181,6 +183,11 @@ export default function App() {
           if (data.settings.isShotClockEnabled !== undefined) setIsShotClockEnabled(data.settings.isShotClockEnabled);
           if (data.settings.matchClockDuration !== undefined) setMatchClockDuration(data.settings.matchClockDuration);
           if (data.settings.isMatchClockEnabled !== undefined) setIsMatchClockEnabled(data.settings.isMatchClockEnabled);
+          if (data.settings.matchClock !== undefined) setMatchClock(data.settings.matchClock);
+          else if (data.settings.matchClockDuration !== undefined) setMatchClock(data.settings.matchClockDuration);
+          
+          if (data.settings.shotClock !== undefined) setShotClock(data.settings.shotClock);
+          else if (data.settings.shotClockDuration !== undefined) setShotClock(data.settings.shotClockDuration);
         }
 
         // Teams
@@ -214,6 +221,8 @@ export default function App() {
         isShotClockEnabled,
         matchClockDuration,
         isMatchClockEnabled,
+        matchClock,
+        shotClock,
       },
       teams: {
         team1Name,
@@ -232,6 +241,7 @@ export default function App() {
     player1, player2, 
     shotClockDuration, isShotClockEnabled, 
     matchClockDuration, isMatchClockEnabled,
+    matchClock, shotClock,
     team1Name, team2Name, team1Players, team2Players, selectedMatchIndex,
     matchHistory, teamTotals, playerPreferences, isInitialized
   ]);
@@ -342,7 +352,7 @@ export default function App() {
       );
 
       const newEntry: MatchHistoryEntry = {
-        id: existingIndex !== -1 ? prev[existingIndex].id : Date.now().toString(),
+        id: existingIndex !== -1 ? prev[existingIndex].id : `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         date: existingIndex !== -1 ? prev[existingIndex].date : new Date().toISOString(),
         player1: p1.name,
         player2: p2.name,
@@ -628,6 +638,8 @@ export default function App() {
         isShotClockEnabled,
         matchClockDuration,
         isMatchClockEnabled,
+        matchClock,
+        shotClock,
       },
       teams: {
         team1Name,
@@ -680,6 +692,10 @@ export default function App() {
               setIsShotClockEnabled(data.settings.isShotClockEnabled);
               setMatchClockDuration(data.settings.matchClockDuration);
               setIsMatchClockEnabled(data.settings.isMatchClockEnabled);
+              if (data.settings.matchClock !== undefined) setMatchClock(data.settings.matchClock);
+              else if (data.settings.matchClockDuration !== undefined) setMatchClock(data.settings.matchClockDuration);
+              if (data.settings.shotClock !== undefined) setShotClock(data.settings.shotClock);
+              else if (data.settings.shotClockDuration !== undefined) setShotClock(data.settings.shotClockDuration);
             }
             if (data.teams) {
               setTeam1Name(data.teams.team1Name);
@@ -983,9 +999,11 @@ export default function App() {
         <motion.main 
           initial={false}
           animate={{ 
-            paddingTop: (view === 'teams' || view === 'settings' || view === 'scoreboard')
-              ? `calc(${deviceInfo.isDesktop ? '96px' : (deviceInfo.isPhone ? '56px' : '80px')} + 2vh)`
-              : 0,
+            paddingTop: view === 'scoreboard'
+              ? (deviceInfo.isDesktop ? '112px' : (deviceInfo.isPhone ? '80px' : '96px'))
+              : ((view === 'teams' || view === 'settings')
+                ? `calc(${deviceInfo.isDesktop ? '112px' : (deviceInfo.isPhone ? '80px' : '96px')} + 2vh)`
+                : 0),
             paddingBottom: 0 
           }}
           transition={{ 
@@ -993,117 +1011,145 @@ export default function App() {
             opacity: { duration: 0.4 },
             default: { duration: view === 'scoreboard' ? 0 : 0.4, ease: "easeInOut" }
           }}
-          className={`relative z-10 min-h-[100dvh] flex flex-col ${view === 'scoreboard' ? 'justify-start sm:justify-center sm:gap-4 lg:gap-6' : 'justify-start pb-24'} px-4 sm:px-6 mx-auto w-full responsive-zoom`}
+          className={`relative z-10 min-h-[100dvh] flex flex-col ${view === 'scoreboard' ? 'justify-center' : 'justify-start pb-24'} px-2 sm:px-6 mx-auto w-full`}
           style={{ maxWidth: view === 'scoreboard' ? 'var(--gameplay-width)' : 'min(90vw, 985px)' }}
         >
         <AnimatePresence mode="wait">
           {view === 'scoreboard' && (
-            <div className="fixed inset-0 pointer-events-none z-0 hidden sm:block">
-              <div 
-                className="absolute left-0 inset-y-0 flex items-center justify-center overflow-hidden"
-                style={{ width: 'var(--sidebar-width)' }}
-              >
-                {team1Name && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 0.9, x: 0 }}
-                    className="text-[min(4vw,14px)] sm:text-[28px] lg:text-[40px] font-gothic font-black uppercase tracking-[0.2em] vertical-text rotate-180 h-full flex items-center justify-center"
-                    style={{ color: player1.highlightColor }}
-                  >
-                    {team1Name}
-                  </motion.div>
-                )}
+            <motion.div key="scoreboard-wrapper" className="w-full">
+              <div className="fixed inset-x-0 top-[56px] sm:top-[80px] lg:top-[96px] bottom-0 pointer-events-none z-0">
+                <div 
+                  className="absolute left-[5vw] inset-y-0 flex items-center justify-center overflow-hidden"
+                  style={{ width: 'var(--sidebar-width)' }}
+                >
+                  {team1Name && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 0.9, x: 0 }}
+                      className="h-full flex items-center justify-center"
+                    >
+                      <FittingText 
+                        text={team1Name} 
+                        vertical={true}
+                        maxFontSize={40}
+                        minFontSize={12}
+                        className="vertical-text rotate-180 font-gothic font-black uppercase tracking-[0.2em] justify-center"
+                        style={{ color: player1.highlightColor }}
+                      />
+                    </motion.div>
+                  )}
+                </div>
+                <div 
+                  className="absolute right-[5vw] inset-y-0 flex items-center justify-center overflow-hidden"
+                  style={{ width: 'var(--sidebar-width)' }}
+                >
+                  {team2Name && (
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 0.9, x: 0 }}
+                      className="h-full flex items-center justify-center"
+                    >
+                      <FittingText 
+                        text={team2Name} 
+                        vertical={true}
+                        maxFontSize={40}
+                        minFontSize={12}
+                        className="vertical-text font-gothic font-black uppercase tracking-[0.2em] justify-center"
+                        style={{ color: player2.highlightColor }}
+                      />
+                    </motion.div>
+                  )}
+                </div>
               </div>
-              <div 
-                className="absolute right-0 inset-y-0 flex items-center justify-center overflow-hidden"
-                style={{ width: 'var(--sidebar-width)' }}
-              >
-                {team2Name && (
-                  <motion.div 
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 0.9, x: 0 }}
-                    className="text-[min(4vw,14px)] sm:text-[28px] lg:text-[40px] font-gothic font-black uppercase tracking-[0.2em] vertical-text h-full flex items-center justify-center"
-                    style={{ color: player2.highlightColor }}
-                  >
-                    {team2Name}
-                  </motion.div>
-                )}
-              </div>
-            </div>
-          )}
 
-          {view === 'scoreboard' && (
-            <ScoreboardView 
-              player1={player1}
-              player2={player2}
-              team1Name={team1Name}
-              team2Name={team2Name}
-              isShotClockEnabled={isShotClockEnabled}
-              isMatchClockEnabled={isMatchClockEnabled}
-              shotClock={shotClock}
-              matchClock={matchClock}
-              isTimerRunning={isTimerRunning}
-              isEditingNames={isEditingNames}
-              onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
-              onResetTimer={resetTimer}
-              onResetMatchClock={resetMatchClock}
-              formatTime={formatTime}
-              incrementScore={incrementScore}
-              decrementScore={decrementScore}
-              setPlayer1={updatePlayer1}
-              setPlayer2={updatePlayer2}
-              resetTimer={resetTimer}
-              finishMatch={finishMatch}
-              deviceInfo={deviceInfo}
-              isNavVisible={isNavVisible}
-            />
+              <ScoreboardView 
+                player1={player1}
+                player2={player2}
+                team1Name={team1Name}
+                team2Name={team2Name}
+                isShotClockEnabled={isShotClockEnabled}
+                isMatchClockEnabled={isMatchClockEnabled}
+                shotClock={shotClock}
+                matchClock={matchClock}
+                isTimerRunning={isTimerRunning}
+                isEditingNames={isEditingNames}
+                onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
+                onResetTimer={resetTimer}
+                onResetMatchClock={resetMatchClock}
+                formatTime={formatTime}
+                incrementScore={incrementScore}
+                decrementScore={decrementScore}
+                setPlayer1={updatePlayer1}
+                setPlayer2={updatePlayer2}
+                resetTimer={resetTimer}
+                finishMatch={finishMatch}
+                deviceInfo={deviceInfo}
+                isNavVisible={isNavVisible}
+              />
+            </motion.div>
           )}
 
           {view === 'teams' && (
-            <TeamsView 
-              player1={player1}
-              player2={player2}
-              team1Name={team1Name}
-              team2Name={team2Name}
-              team1Players={team1Players}
-              team2Players={team2Players}
-              matchHistory={matchHistory}
-              selectedMatchIndex={selectedMatchIndex}
-              teamTotals={teamTotals}
-              updateTeamData={updateTeamData}
-              downloadData={downloadData}
-              downloadJSON={downloadJSON}
-              uploadData={uploadData}
-              setShowClearTeamsConfirm={setShowClearTeamsConfirm}
-              selectTeamMatch={selectTeamMatch}
-              getMatchResult={getMatchResult}
-              clearMatchResult={clearMatchResult}
-              formatTime={formatTime}
-            />
+            <motion.div key="teams-view" className="w-full">
+              <TeamsView 
+                player1={player1}
+                player2={player2}
+                team1Name={team1Name}
+                team2Name={team2Name}
+                team1Players={team1Players}
+                team2Players={team2Players}
+                matchHistory={matchHistory}
+                selectedMatchIndex={selectedMatchIndex}
+                teamTotals={teamTotals}
+                updateTeamData={updateTeamData}
+                downloadData={downloadData}
+                downloadJSON={downloadJSON}
+                uploadData={uploadData}
+                setShowClearTeamsConfirm={setShowClearTeamsConfirm}
+                selectTeamMatch={selectTeamMatch}
+                getMatchResult={getMatchResult}
+                clearMatchResult={clearMatchResult}
+                formatTime={formatTime}
+              />
+            </motion.div>
           )}
 
           {view === 'settings' && (
-            <SettingsView 
-              player1={player1}
-              player2={player2}
-              setPlayer1={updatePlayer1}
-              setPlayer2={updatePlayer2}
-              activePicker={activePicker}
-              setActivePicker={setActivePicker}
-              isMatchClockEnabled={isMatchClockEnabled}
-              setIsMatchClockEnabled={setIsMatchClockEnabled}
-              matchClockDuration={matchClockDuration}
-              setMatchClockDuration={setMatchClockDuration}
-              setMatchClock={setMatchClock}
-              resetMatchClock={resetMatchClock}
-              isShotClockEnabled={isShotClockEnabled}
-              setIsShotClockEnabled={setIsShotClockEnabled}
-              shotClockDuration={shotClockDuration}
-              setShotClockDuration={setShotClockDuration}
-              setShotClock={setShotClock}
-              pauseTimer={pauseTimer}
-              setShowRestoreDefaultsConfirm={setShowRestoreDefaultsConfirm}
-            />
+            <motion.div key="settings-view" className="w-full">
+              <SettingsView 
+                player1={player1}
+                player2={player2}
+                setPlayer1={updatePlayer1}
+                setPlayer2={updatePlayer2}
+                activePicker={activePicker}
+                setActivePicker={setActivePicker}
+                isMatchClockEnabled={isMatchClockEnabled}
+                setIsMatchClockEnabled={setIsMatchClockEnabled}
+                matchClockDuration={matchClockDuration}
+                setMatchClockDuration={setMatchClockDuration}
+                setMatchClock={setMatchClock}
+                resetMatchClock={resetMatchClock}
+                isShotClockEnabled={isShotClockEnabled}
+                setIsShotClockEnabled={setIsShotClockEnabled}
+                shotClockDuration={shotClockDuration}
+                setShotClockDuration={setShotClockDuration}
+                setShotClock={setShotClock}
+                pauseTimer={pauseTimer}
+                setShowRestoreDefaultsConfirm={setShowRestoreDefaultsConfirm}
+              />
+            </motion.div>
+          )}
+
+          {view === 'history' && (
+            <motion.div key="history-view" className="w-full">
+              <HistoryView 
+                player1={player1}
+                player2={player2}
+                matchHistory={matchHistory}
+                setShowClearHistoryConfirm={setShowClearHistoryConfirm}
+                formatTime={formatTime}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
 
@@ -1153,7 +1199,7 @@ export default function App() {
                 initial={{ scale: 0.8, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.8, opacity: 0, y: 20 }}
-                className="bg-black border-2 p-10 rounded-[40px] max-w-2xl w-full space-y-10 text-center"
+                className="bg-black border-2 p-6 sm:p-10 rounded-[30px] sm:rounded-[40px] max-w-lg sm:max-w-2xl w-full space-y-6 sm:space-y-10 text-center"
                 style={{ 
                   borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`,
                   boxShadow: `0 0 50px ${player1.highlightColor}11`
@@ -1161,42 +1207,48 @@ export default function App() {
               >
                 <div className="space-y-2">
                   <div className="flex justify-center">
-                    <div className="p-4 rounded-full" style={{ backgroundColor: `${player1.highlightColor}11` }}>
-                      <Trophy className="w-12 h-12" style={{ color: player1.highlightColor }} />
+                    <div className="p-3 sm:p-4 rounded-full" style={{ backgroundColor: `${player1.highlightColor}11` }}>
+                      <Trophy className="w-8 h-8 sm:w-12 sm:h-12" style={{ color: player1.highlightColor }} />
                     </div>
                   </div>
-                  <h2 className="text-5xl font-black uppercase tracking-tighter text-white">Team Totals</h2>
-                  <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Final Session Results</p>
+                  <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter text-white">Team Totals</h2>
+                  <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] sm:text-xs">Final Session Results</p>
                 </div>
- 
-                <div className="grid grid-cols-2 gap-8 items-center">
-                  <div className="space-y-4">
-                    <p className="text-xl font-black uppercase tracking-tight truncate" style={{ color: player1.highlightColor }}>{team1Name}</p>
-                    <p className="text-8xl font-black text-white tabular-nums">
+
+                <div className="grid grid-cols-2 gap-4 sm:gap-8 items-center">
+                  <div className="space-y-2 sm:space-y-4">
+                    <div className="h-6 sm:h-8">
+                      <FittingText text={team1Name || 'TEAM 1'} maxFontSize={24} minFontSize={12} className="justify-start font-black uppercase tracking-tight" style={{ color: player1.highlightColor }} />
+                    </div>
+                    <p className="text-5xl sm:text-8xl font-black text-white tabular-nums">
                       {teamTotals.t1}
                     </p>
                   </div>
-                  <div className="space-y-4">
-                    <p className="text-xl font-black uppercase tracking-tight truncate" style={{ color: player2.highlightColor }}>{team2Name}</p>
-                    <p className="text-8xl font-black text-white tabular-nums">
+                  <div className="space-y-2 sm:space-y-4">
+                    <div className="h-6 sm:h-8">
+                      <FittingText text={team2Name || 'TEAM 2'} maxFontSize={24} minFontSize={12} className="justify-start font-black uppercase tracking-tight" style={{ color: player2.highlightColor }} />
+                    </div>
+                    <p className="text-5xl sm:text-8xl font-black text-white tabular-nums">
                       {teamTotals.t2}
                     </p>
                   </div>
                 </div>
- 
-                <button 
-                  onClick={() => {
-                    setShowTeamTotals(false);
-                    setView('teams');
-                  }}
-                  className="w-full h-20 text-slate-950 rounded-3xl font-black text-2xl uppercase tracking-widest transition-all active:scale-95"
-                  style={{ 
-                    backgroundImage: `linear-gradient(to right, ${player1.highlightColor}, ${player2.highlightColor})`,
-                    boxShadow: `0 10px 20px ${player1.highlightColor}33`
-                  }}
-                >
-                  Close Results
-                </button>
+
+                <Tooltip text="Return to Teams View" position="top">
+                  <button 
+                    onClick={() => {
+                      setShowTeamTotals(false);
+                      setView('teams');
+                    }}
+                    className="w-full h-14 sm:h-20 text-slate-950 rounded-2xl sm:rounded-3xl font-black text-lg sm:text-2xl uppercase tracking-widest transition-all active:scale-95"
+                    style={{ 
+                      backgroundImage: `linear-gradient(to right, ${player1.highlightColor}, ${player2.highlightColor})`,
+                      boxShadow: `0 10px 20px ${player1.highlightColor}33`
+                    }}
+                  >
+                    Close Results
+                  </button>
+                </Tooltip>
               </motion.div>
             </div>
           )}
@@ -1208,34 +1260,40 @@ export default function App() {
       {/* Quick Actions Floating Bar (Mobile) */}
       <AnimatePresence>
         {view !== 'scoreboard' && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/90 backdrop-blur-xl border-2 p-2 rounded-2xl shadow-2xl md:hidden z-50 bar-zoom"
-            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
-          >
-            <button 
-              onClick={navigateToScoreboard}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'scoreboard' ? 'text-slate-950' : 'text-slate-400'}`}
-              style={view === 'scoreboard' ? { backgroundColor: player1.highlightColor } : {}}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/90 backdrop-blur-xl border-2 p-2 rounded-2xl shadow-2xl md:hidden z-50 bar-zoom landscape:hidden"
+              style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
             >
-              Score
-            </button>
-            <button 
-              onClick={() => setView('teams')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'teams' ? 'text-slate-950' : 'text-slate-400'}`}
-              style={view === 'teams' ? { backgroundColor: player1.highlightColor } : {}}
-            >
-              Teams
-            </button>
-            <button 
-              onClick={() => setView('settings')}
-              className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'settings' ? 'text-slate-950' : 'text-slate-400'}`}
-              style={view === 'settings' ? { backgroundColor: player2.highlightColor } : {}}
-            >
-              Settings
-            </button>
+            <Tooltip text="Scoreboard" position="top">
+              <button 
+                onClick={navigateToScoreboard}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'scoreboard' ? 'text-slate-950' : 'text-slate-400'}`}
+                style={view === 'scoreboard' ? { backgroundColor: player1.highlightColor } : {}}
+              >
+                Score
+              </button>
+            </Tooltip>
+            <Tooltip text="Teams" position="top">
+              <button 
+                onClick={() => setView('teams')}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'teams' ? 'text-slate-950' : 'text-slate-400'}`}
+                style={view === 'teams' ? { backgroundColor: player1.highlightColor } : {}}
+              >
+                Teams
+              </button>
+            </Tooltip>
+            <Tooltip text="Settings" position="top">
+              <button 
+                onClick={() => setView('settings')}
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'settings' ? 'text-slate-950' : 'text-slate-400'}`}
+                style={view === 'settings' ? { backgroundColor: player2.highlightColor } : {}}
+              >
+                Settings
+              </button>
+            </Tooltip>
           </motion.div>
         )}
       </AnimatePresence>

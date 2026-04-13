@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'motion/react';
 import { Trophy, Trash2, Calendar, User, Hash } from 'lucide-react';
 import { Player, MatchHistoryEntry } from '../types';
+import { Tooltip } from '../components/Tooltip';
 
 interface HistoryViewProps {
   player1: Player;
@@ -37,13 +38,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
           <h2 className="text-4xl font-black uppercase tracking-tight text-white">Match History</h2>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Review past performances</p>
         </div>
-        <button 
-          onClick={() => setShowClearHistoryConfirm(true)}
-          className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl transition-all font-bold text-sm border-2 border-red-500/20"
-        >
-          <Trash2 className="w-4 h-4" />
-          Clear All History
-        </button>
+        <Tooltip text="Delete All Past Matches" position="bottom">
+          <button 
+            onClick={() => setShowClearHistoryConfirm(true)}
+            className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-2xl transition-all font-bold text-sm border-2 border-red-500/20"
+          >
+            <Trash2 className="w-4 h-4" />
+            Clear All History
+          </button>
+        </Tooltip>
       </div>
 
       {matchHistory.length === 0 ? (
