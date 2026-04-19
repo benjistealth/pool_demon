@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { Player } from '../types';
 import { ScoreCard } from '../components/ScoreCard';
 import { Tooltip } from '../components/Tooltip';
+import { FittingText } from '../components/FittingText';
 import finishBattleImg from '../bloody_finish_battle.png';
 
 interface ScoreboardViewProps {
@@ -26,8 +27,11 @@ interface ScoreboardViewProps {
   setPlayer2: (updates: Partial<Player>) => void;
   resetTimer: () => void;
   finishMatch: () => void;
-  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean };
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
   isNavVisible: boolean;
+  sharedPlayerFontSize: number;
+  setP1FontSize: (size: number) => void;
+  setP2FontSize: (size: number) => void;
 }
 
 export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
@@ -52,11 +56,26 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
   resetTimer,
   finishMatch,
   deviceInfo,
-  isNavVisible
+  isNavVisible,
+  sharedPlayerFontSize,
+  setP1FontSize,
+  setP2FontSize
 }) => {
+  const [t1FontSize, setT1FontSize] = React.useState(180);
+  const [t2FontSize, setT2FontSize] = React.useState(180);
+  const sharedTeamFontSize = Math.min(t1FontSize, t2FontSize);
+
+  // Reset when names change
+  React.useEffect(() => {
+    setT1FontSize(180);
+    setT2FontSize(180);
+  }, [team1Name, team2Name]);
+
   React.useLayoutEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const isTwoColumn = !deviceInfo.isPhone || deviceInfo.isLandscape;
 
   return (
     <motion.div
@@ -65,35 +84,47 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="flex flex-col sm:flex-none w-full"
+      className="flex flex-col items-center justify-center w-full flex-1"
     >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="relative flex flex-col justify-center min-h-0 flex-1"
+        className="relative flex flex-col justify-center min-h-0 flex-1 overflow-hidden"
       >
-        <div className="relative flex items-center justify-center w-full">
-          {/* Mobile Finish Button: Positioned just below top bar, above player names */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 z-[60] md:hidden">
-            <Tooltip text="Finish & Save Match" position="bottom">
-              <motion.button
-                onClick={finishMatch}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="flex items-center justify-center cursor-pointer"
+        <div 
+          className="relative flex items-center justify-between w-full h-[var(--skull-height)]"
+        >
+          {/* Left Region: Centered Team Name */}
+          <div className="flex-1 h-full min-w-0 pointer-events-none pl-[2vw]">
+            {team1Name && (
+              <motion.div 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 0.9, x: 0 }}
+                className="h-full w-full"
               >
-                <img 
-                  src={finishBattleImg} 
-                  alt="Finish Battle" 
-                  className="h-8 w-auto object-contain"
-                  referrerPolicy="no-referrer"
+                <FittingText 
+                  text={team1Name} 
+                  vertical={true}
+                  maxFontSize={180}
+                  minFontSize={12}
+                  className="vertical-text rotate-180 font-gothic font-black uppercase tracking-[0.2em]"
+                  style={{ color: player1.highlightColor }}
+                  fontSize={sharedTeamFontSize}
+                  onFontSizeCalculated={setT1FontSize}
                 />
-              </motion.button>
-            </Tooltip>
+              </motion.div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 lg:gap-5 w-full">
+          <div 
+            className="grid justify-center justify-items-center shrink-0"
+            style={{ 
+              gridTemplateColumns: isTwoColumn ? 'auto auto' : 'auto',
+              gap: deviceInfo.isDesktop ? '1.25rem' : (deviceInfo.isPhone ? '0.5rem' : '1rem'),
+              maxWidth: '85vw'
+            }}
+          >
             <ScoreCard 
               player={player1}
               isEditingNames={isEditingNames}
@@ -108,6 +139,9 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
                 }
               }}
               idx={0}
+              fontSize={sharedPlayerFontSize}
+              onFontSizeCalculated={setP1FontSize}
+              deviceInfo={deviceInfo}
             />
             <ScoreCard 
               player={player2}
@@ -123,34 +157,58 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
                 }
               }}
               idx={1}
+              fontSize={sharedPlayerFontSize}
+              onFontSizeCalculated={setP2FontSize}
+              deviceInfo={deviceInfo}
             />
           </div>
-        </div>
-      </motion.div>
 
-      <motion.div 
-        key="finish-button"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
-        className="w-full flex items-center justify-center shrink-0 z-50 mt-4 sm:mt-6 lg:mt-8 mb-6 sm:mb-6 lg:mb-6 hidden md:flex"
-      >
-        <Tooltip text="Finish & Save Match" position="top">
-          <motion.button
-            onClick={finishMatch}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            className="flex items-center justify-center cursor-pointer"
+          {/* Right Region: Centered Team Name */}
+          <div className="flex-1 h-full min-w-0 pointer-events-none pr-[2vw]">
+            {team2Name && (
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 0.9, x: 0 }}
+                className="h-full w-full"
+              >
+                <FittingText 
+                  text={team2Name} 
+                  vertical={true}
+                  maxFontSize={180}
+                  minFontSize={12}
+                  className="vertical-text font-gothic font-black uppercase tracking-[0.2em]"
+                  style={{ color: player2.highlightColor }}
+                  fontSize={sharedTeamFontSize}
+                  onFontSizeCalculated={setT2FontSize}
+                />
+              </motion.div>
+            )}
+          </div>
+
+          <div 
+            className="absolute left-1/2 -translate-x-1/2 z-50 flex items-center justify-center pointer-events-auto"
+            style={{ 
+              bottom: 'var(--finish-bottom)',
+            }}
           >
-            <img 
-              src={finishBattleImg} 
-              alt="Finish Battle" 
-              className="h-24 sm:h-32 w-auto object-contain"
-              referrerPolicy="no-referrer"
-            />
-          </motion.button>
-        </Tooltip>
+            <Tooltip text="Finish Match" position="top">
+              <motion.button
+                onClick={finishMatch}
+                whileHover={{ scale: 2.2 }}
+                whileTap={{ scale: 1.8 }}
+                className="cursor-pointer transition-transform origin-center"
+                style={{ scale: 'var(--finish-scale)' }}
+              >
+                <img 
+                  src={finishBattleImg} 
+                  alt="Finish Battle" 
+                  className="w-[6.6vw] h-auto object-contain drop-shadow-[0_0_15px_rgba(255,0,0,0.5)]"
+                  referrerPolicy="no-referrer"
+                />
+              </motion.button>
+            </Tooltip>
+          </div>
+        </div>
       </motion.div>
     </motion.div>
   );

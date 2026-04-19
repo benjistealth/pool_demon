@@ -12,6 +12,7 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   themeColor?: string;
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
 }
 
 export const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -22,12 +23,16 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  themeColor = '#10B981'
+  themeColor = '#10B981',
+  deviceInfo
 }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center"
+          style={{ padding: deviceInfo.isPhone ? '1rem' : '1.5rem' }}
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -39,10 +44,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-md bg-slate-900 border-2 rounded-[32px] p-8 shadow-2xl overflow-hidden"
-            style={{ borderColor: themeColor }}
+            className="relative w-full max-w-[23.3vw] bg-slate-900 border-0.1vh solid rounded-[1.66vw] p-[1.66vw] shadow-2xl overflow-hidden"
+            style={{ borderColor: themeColor, borderWidth: '0.1vh' }}
           >
-            <div className="absolute top-0 left-0 w-full h-1" style={{ backgroundColor: themeColor }} />
+            <div className="absolute top-0 left-0 w-full h-[0.1vh]" style={{ backgroundColor: themeColor }} />
             
             <div className="flex flex-col items-center text-center space-y-6">
               <div 
@@ -57,7 +62,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 <p className="text-slate-400 font-medium leading-relaxed">{message}</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3 w-full pt-4">
+              <div 
+                className="flex gap-3 w-full pt-4"
+                style={{ flexDirection: deviceInfo.isPhone ? 'column' : 'row' }}
+              >
                 <Tooltip text="Go Back" position="top">
                   <button
                     onClick={onClose}

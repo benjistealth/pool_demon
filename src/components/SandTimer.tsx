@@ -8,9 +8,10 @@ interface SandTimerProps {
   label: string;
   formattedValue: string;
   isPaused?: boolean;
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
 }
 
-export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, label, formattedValue, isPaused = false }) => {
+export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, label, formattedValue, isPaused = false, deviceInfo }) => {
   const percentage = Math.max(0, Math.min(100, (current / total) * 100));
   const bloodColor = "#ff0000"; // Bright red liquid
   
@@ -23,8 +24,17 @@ export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, lab
   const bottomHeight = 25 * (1 - (percentage / 100));
 
   return (
-    <div className="flex items-center gap-2 lg:gap-3">
-      <div className="relative w-6 h-9 lg:w-10 lg:h-14">
+    <div 
+      className="flex items-center"
+      style={{ gap: '0.2vw' }}
+    >
+      <div 
+        className="relative"
+        style={{ 
+          width: 'var(--timer-w)',
+          height: 'var(--timer-h)'
+        }}
+      >
         <svg viewBox="0 0 40 60" className="w-full h-full drop-shadow-[0_0_8px_rgba(255,0,0,0.4)]">
           {/* Glass container */}
           <path 
@@ -43,7 +53,7 @@ export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, lab
           <g clipPath={`url(#bottom-clip-${label.replace(/\s+/g, '-')})`}>
             <path d="M5,55 L35,55 C35,40 22,32 20,30 C18,32 5,40 5,55 Z" fill={bloodColor} opacity="0.9" />
           </g>
-
+ 
           {/* Drip line */}
           {current > 0 && percentage < 100 && (
             <motion.line 
@@ -55,7 +65,7 @@ export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, lab
               transition={{ repeat: isPaused ? 0 : Infinity, duration: 0.8, ease: "linear" }}
             />
           )}
-
+ 
           <defs>
             <clipPath id={`top-clip-${label.replace(/\s+/g, '-')}`}>
               <rect x="0" y={topY} width="40" height={topHeight} />
@@ -67,10 +77,21 @@ export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, lab
         </svg>
       </div>
       <div className="flex flex-col justify-center">
-        <span className="text-[16px] lg:text-[24px] font-black font-gothic leading-none tracking-tight" style={{ color }}>
+        <span 
+          className="font-black font-gothic leading-none tracking-tight" 
+          style={{ 
+            color,
+            fontSize: 'var(--timer-font)'
+          }}
+        >
           {formattedValue}
         </span>
-        <span className="text-[7px] lg:text-[9px] uppercase tracking-widest text-slate-500 font-black">{label}</span>
+        <span 
+          className="uppercase tracking-widest text-slate-500 font-black"
+          style={{ fontSize: '0.7vh' }}
+        >
+          {label}
+        </span>
       </div>
     </div>
   );

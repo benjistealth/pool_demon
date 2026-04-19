@@ -48,25 +48,71 @@ export default function App() {
   const [team2Players, setTeam2Players] = useState<string[]>([]);
   const [matchHistory, setMatchHistory] = useState<MatchHistoryEntry[]>([]);
   const [selectedMatchIndex, setSelectedMatchIndex] = useState<number | null>(null);
+  const [totalsT1FontSize, setTotalsT1FontSize] = useState(24);
+  const [totalsT2FontSize, setTotalsT2FontSize] = useState(24);
+  const sharedTotalsFontSize = Math.min(totalsT1FontSize, totalsT2FontSize);
+  const [p1FontSize, setP1FontSize] = useState(95);
+  const [p2FontSize, setP2FontSize] = useState(95);
+  const sharedPlayerFontSize = Math.min(p1FontSize, p2FontSize);
+
+  // Reset font sizes when names change to ensure fresh calculation and avoid "sticky" small fonts
+  useEffect(() => {
+    setP1FontSize(95);
+    setP2FontSize(95);
+  }, [player1.name, player2.name]);
+
+  useEffect(() => {
+    setTotalsT1FontSize(24);
+    setTotalsT2FontSize(24);
+  }, [team1Name, team2Name]);
+
   const [view, setView] = useState<'scoreboard' | 'history' | 'settings' | 'teams'>('scoreboard');
   const [isNavVisible, setIsNavVisible] = useState(true);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const navTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Robust device detection based on User-Agent and screen width
-  const deviceInfo = useMemo(() => {
-    const ua = navigator.userAgent.toLowerCase();
-    const isTabletUA = ua.includes("ipad") || (ua.includes("android") && !ua.includes("mobile"));
-    const isMobileUA = /iphone|ipod|android|iemobile|blackberry|opera mini|palm|windows ce/.test(ua);
-    
-    // A device is a phone if it's mobile but NOT a tablet, or if the screen is very narrow
-    const isPhone = (isMobileUA && !isTabletUA) || window.innerWidth < 768;
-    // A device is a tablet if it matches the tablet UA or falls in the tablet width range
-    const isTablet = isTabletUA || (window.innerWidth >= 768 && window.innerWidth < 1024);
-    const isDesktop = !isPhone && !isTablet;
+  // Robust device detection based on estimated physical screen size
+  const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
 
-    return { isPhone, isTablet, isDesktop };
-  }, [view]); // Re-evaluate on view change as a proxy for layout shifts, but mostly static
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [forcedMode, setForcedMode] = useState<'auto' | 'phone' | 'tablet' | 'desktop'>(() => {
+    const saved = localStorage.getItem('forced_device_mode');
+    return (saved as any) || 'auto';
+  });
+
+  const deviceInfo = useMemo(() => {
+    const { width, height } = windowSize;
+    // Estimate diagonal inches based on logical pixels. 
+    // A factor of ~140-160 logical pixels per inch is a good heuristic
+    const diagonalPx = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+    const estimatedInches = diagonalPx / 150; 
+    
+    const ua = navigator.userAgent.toLowerCase();
+    const isMobileUA = /iphone|ipad|ipod|android|mobi|iemobile|blackberry|opera mini|palm|windows ce/.test(ua);
+    const isTabletUA = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*mobi)))/.test(ua);
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isTouch = window.matchMedia('(pointer: coarse)').matches || isTouchDevice;
+    
+    const isPhone = width < 768 && !isTabletUA;
+    const isTablet = isTabletUA || (width >= 768 && width < 1024);
+    const isDesktop = !isPhone && !isTablet;
+    
+    const isLandscape = width > height;
+
+    return { isPhone, isTablet, isDesktop, estimatedInches, isLandscape, width, height, forcedMode };
+  }, [windowSize, forcedMode]);
+
+  // Persist forced mode
+  useEffect(() => {
+    localStorage.setItem('forced_device_mode', forcedMode);
+  }, [forcedMode]);
 
   // Keyboard detection for mobile
   useEffect(() => {
@@ -80,6 +126,7 @@ export default function App() {
 
     const handleFocusOut = () => {
       setIsKeyboardOpen(false);
+      setIsNavVisible(true);
     };
 
     window.addEventListener('focusin', handleFocusIn);
@@ -953,7 +1000,16 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden bg-transparent">
+    <div 
+      className={`relative min-h-screen text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden bg-transparent ${(forcedMode && forcedMode !== 'auto') ? `force-${forcedMode}` : ''}`}
+      style={{
+        '--sidebar-width': deviceInfo.isDesktop ? '120px' : (deviceInfo.isPhone ? '20px' : '60px'),
+        '--gameplay-width': deviceInfo.isDesktop ? 'min(1100px, calc(100vw - 240px))' : (deviceInfo.isPhone ? 'calc(100vw - 40px)' : 'calc(100vw - 120px)'),
+        '--circle-offset': deviceInfo.isDesktop 
+          ? 'calc((100vw - min(1100px, calc(100vw - 240px))) / 4 + 4.5rem)' 
+          : 'calc(100% + 2rem)'
+      } as React.CSSProperties}
+    >
       {/* Backdrop Image Layer (User's Fire Frame) */}
       <img 
         src={background}
@@ -962,47 +1018,47 @@ export default function App() {
         alt=""
       />
 
+      <Navigation 
+        view={view}
+        setView={setView}
+        player1={player1}
+        player2={player2}
+        isFullscreen={isFullscreen}
+        toggleFullscreen={toggleFullscreen}
+        isNavVisible={isNavVisible}
+        isKeyboardOpen={isKeyboardOpen}
+        deviceInfo={deviceInfo}
+        navigateToScoreboard={navigateToScoreboard}
+        isShotClockEnabled={isShotClockEnabled}
+        isMatchClockEnabled={isMatchClockEnabled}
+        shotClock={shotClock}
+        shotClockDuration={shotClockDuration}
+        matchClock={matchClock}
+        matchClockDuration={matchClockDuration}
+        isTimerRunning={isTimerRunning}
+        onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
+        onResetTimer={resetTimer}
+        formatTime={formatTime}
+      />
+
+      {/* SVG Gradient Definitions & Filters */}
+      <svg width="0" height="0" className="fixed top-0 left-0 pointer-events-none z-[10000]">
+        <defs>
+          <linearGradient id="cup-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor={player1.highlightColor} />
+            <stop offset="100%" stopColor={player2.highlightColor} />
+          </linearGradient>
+        </defs>
+      </svg>
+
       <div className="relative z-10">
-        {/* SVG Gradient Definitions & Filters */}
-        <svg width="0" height="0" className="absolute pointer-events-none">
-          <defs>
-            <linearGradient id="cup-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor={player1.highlightColor} />
-              <stop offset="100%" stopColor={player2.highlightColor} />
-            </linearGradient>
-          </defs>
-        </svg>
-
-        <Navigation 
-          view={view}
-          setView={setView}
-          player1={player1}
-          player2={player2}
-          isFullscreen={isFullscreen}
-          toggleFullscreen={toggleFullscreen}
-          isNavVisible={isNavVisible}
-          isKeyboardOpen={isKeyboardOpen}
-          deviceInfo={deviceInfo}
-          navigateToScoreboard={navigateToScoreboard}
-          isShotClockEnabled={isShotClockEnabled}
-          isMatchClockEnabled={isMatchClockEnabled}
-          shotClock={shotClock}
-          shotClockDuration={shotClockDuration}
-          matchClock={matchClock}
-          matchClockDuration={matchClockDuration}
-          isTimerRunning={isTimerRunning}
-          onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
-          onResetTimer={resetTimer}
-          formatTime={formatTime}
-        />
-
         <motion.main 
           initial={false}
           animate={{ 
             paddingTop: view === 'scoreboard'
-              ? (deviceInfo.isDesktop ? '112px' : (deviceInfo.isPhone ? '80px' : '96px'))
+              ? '6.2vh'
               : ((view === 'teams' || view === 'settings')
-                ? `calc(${deviceInfo.isDesktop ? '112px' : (deviceInfo.isPhone ? '80px' : '96px')} + 2vh)`
+                ? `calc(var(--nav-height) + var(--content-padding))`
                 : 0),
             paddingBottom: 0 
           }}
@@ -1011,82 +1067,42 @@ export default function App() {
             opacity: { duration: 0.4 },
             default: { duration: view === 'scoreboard' ? 0 : 0.4, ease: "easeInOut" }
           }}
-          className={`relative z-10 min-h-[100dvh] flex flex-col ${view === 'scoreboard' ? 'justify-center' : 'justify-start pb-24'} px-2 sm:px-6 mx-auto w-full`}
-          style={{ maxWidth: view === 'scoreboard' ? 'var(--gameplay-width)' : 'min(90vw, 985px)' }}
+          className={`relative z-10 min-h-[100dvh] flex flex-col items-center ${view === 'scoreboard' ? 'justify-center' : 'justify-start pb-24'} mx-auto w-full`}
+          style={{ 
+            maxWidth: view === 'scoreboard' ? 'var(--gameplay-width)' : '99vw',
+            paddingLeft: view === 'scoreboard' ? 0 : '0.5vw',
+            paddingRight: view === 'scoreboard' ? 0 : '0.5vw'
+          }}
         >
         <AnimatePresence mode="wait">
           {view === 'scoreboard' && (
-            <motion.div key="scoreboard-wrapper" className="w-full">
-              <div className="fixed inset-x-0 top-[56px] sm:top-[80px] lg:top-[96px] bottom-0 pointer-events-none z-0">
-                <div 
-                  className="absolute left-[5vw] inset-y-0 flex items-center justify-center overflow-hidden"
-                  style={{ width: 'var(--sidebar-width)' }}
-                >
-                  {team1Name && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 0.9, x: 0 }}
-                      className="h-full flex items-center justify-center"
-                    >
-                      <FittingText 
-                        text={team1Name} 
-                        vertical={true}
-                        maxFontSize={40}
-                        minFontSize={12}
-                        className="vertical-text rotate-180 font-gothic font-black uppercase tracking-[0.2em] justify-center"
-                        style={{ color: player1.highlightColor }}
-                      />
-                    </motion.div>
-                  )}
-                </div>
-                <div 
-                  className="absolute right-[5vw] inset-y-0 flex items-center justify-center overflow-hidden"
-                  style={{ width: 'var(--sidebar-width)' }}
-                >
-                  {team2Name && (
-                    <motion.div 
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 0.9, x: 0 }}
-                      className="h-full flex items-center justify-center"
-                    >
-                      <FittingText 
-                        text={team2Name} 
-                        vertical={true}
-                        maxFontSize={40}
-                        minFontSize={12}
-                        className="vertical-text font-gothic font-black uppercase tracking-[0.2em] justify-center"
-                        style={{ color: player2.highlightColor }}
-                      />
-                    </motion.div>
-                  )}
-                </div>
-              </div>
-
-              <ScoreboardView 
-                player1={player1}
-                player2={player2}
-                team1Name={team1Name}
-                team2Name={team2Name}
-                isShotClockEnabled={isShotClockEnabled}
-                isMatchClockEnabled={isMatchClockEnabled}
-                shotClock={shotClock}
-                matchClock={matchClock}
-                isTimerRunning={isTimerRunning}
-                isEditingNames={isEditingNames}
-                onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
-                onResetTimer={resetTimer}
-                onResetMatchClock={resetMatchClock}
-                formatTime={formatTime}
-                incrementScore={incrementScore}
-                decrementScore={decrementScore}
-                setPlayer1={updatePlayer1}
-                setPlayer2={updatePlayer2}
-                resetTimer={resetTimer}
-                finishMatch={finishMatch}
-                deviceInfo={deviceInfo}
-                isNavVisible={isNavVisible}
-              />
-            </motion.div>
+            <ScoreboardView 
+              player1={player1}
+              player2={player2}
+              team1Name={team1Name}
+              team2Name={team2Name}
+              isShotClockEnabled={isShotClockEnabled}
+              isMatchClockEnabled={isMatchClockEnabled}
+              shotClock={shotClock}
+              matchClock={matchClock}
+              isTimerRunning={isTimerRunning}
+              isEditingNames={isEditingNames}
+              onToggleTimer={isTimerRunning ? pauseTimer : startTimer}
+              onResetTimer={resetTimer}
+              onResetMatchClock={resetMatchClock}
+              formatTime={formatTime}
+              incrementScore={incrementScore}
+              decrementScore={decrementScore}
+              setPlayer1={updatePlayer1}
+              setPlayer2={updatePlayer2}
+              resetTimer={resetTimer}
+              finishMatch={finishMatch}
+              deviceInfo={deviceInfo}
+              isNavVisible={isNavVisible}
+              sharedPlayerFontSize={sharedPlayerFontSize}
+              setP1FontSize={setP1FontSize}
+              setP2FontSize={setP2FontSize}
+            />
           )}
 
           {view === 'teams' && (
@@ -1110,6 +1126,7 @@ export default function App() {
                 getMatchResult={getMatchResult}
                 clearMatchResult={clearMatchResult}
                 formatTime={formatTime}
+                deviceInfo={deviceInfo}
               />
             </motion.div>
           )}
@@ -1136,6 +1153,8 @@ export default function App() {
                 setShotClock={setShotClock}
                 pauseTimer={pauseTimer}
                 setShowRestoreDefaultsConfirm={setShowRestoreDefaultsConfirm}
+                deviceInfo={deviceInfo}
+                setForcedMode={setForcedMode}
               />
             </motion.div>
           )}
@@ -1148,6 +1167,7 @@ export default function App() {
                 matchHistory={matchHistory}
                 setShowClearHistoryConfirm={setShowClearHistoryConfirm}
                 formatTime={formatTime}
+                deviceInfo={deviceInfo}
               />
             </motion.div>
           )}
@@ -1161,8 +1181,8 @@ export default function App() {
           title="Clear All Team Data?"
           message="This will permanently delete team names and all player lists. This action cannot be undone."
           confirmText="Clear All"
-          type="danger"
           themeColor={player1.highlightColor}
+          deviceInfo={deviceInfo}
         />
  
         <ConfirmModal 
@@ -1176,8 +1196,8 @@ export default function App() {
           title="Restore Defaults?"
           message="This will reset all player colors to their original defaults. Your scores and history will not be affected."
           confirmText="Restore"
-          type="info"
           themeColor={player1.highlightColor}
+          deviceInfo={deviceInfo}
         />
  
         <ConfirmModal 
@@ -1190,8 +1210,8 @@ export default function App() {
           title="Clear Match History?"
           message="This will permanently delete all saved match results. This action cannot be undone."
           confirmText="Clear All"
-          type="danger"
           themeColor={player1.highlightColor}
+          deviceInfo={deviceInfo}
         />
           {showTeamTotals && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
@@ -1199,36 +1219,89 @@ export default function App() {
                 initial={{ scale: 0.8, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.8, opacity: 0, y: 20 }}
-                className="bg-black border-2 p-6 sm:p-10 rounded-[30px] sm:rounded-[40px] max-w-lg sm:max-w-2xl w-full space-y-6 sm:space-y-10 text-center"
+                className="bg-black border-2 w-full text-center"
                 style={{ 
                   borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`,
-                  boxShadow: `0 0 50px ${player1.highlightColor}11`
+                  boxShadow: `0 0 50px ${player1.highlightColor}11`,
+                  padding: deviceInfo.isPhone ? '1.5rem' : '2.5rem',
+                  borderRadius: deviceInfo.isPhone ? '30px' : '40px',
+                  maxWidth: deviceInfo.isPhone ? '100%' : '42rem',
+                  gap: deviceInfo.isPhone ? '1.5rem' : '2.5rem',
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}
               >
                 <div className="space-y-2">
                   <div className="flex justify-center">
-                    <div className="p-3 sm:p-4 rounded-full" style={{ backgroundColor: `${player1.highlightColor}11` }}>
-                      <Trophy className="w-8 h-8 sm:w-12 sm:h-12" style={{ color: player1.highlightColor }} />
+                    <div 
+                      className="rounded-full flex items-center justify-center" 
+                      style={{ 
+                        backgroundColor: `${player1.highlightColor}11`,
+                        padding: deviceInfo.isPhone ? '0.75rem' : '1rem'
+                      }}
+                    >
+                      <Trophy 
+                        style={{ 
+                          color: player1.highlightColor,
+                          width: deviceInfo.isPhone ? '2rem' : '3rem',
+                          height: deviceInfo.isPhone ? '2rem' : '3rem'
+                        }} 
+                      />
                     </div>
                   </div>
-                  <h2 className="text-3xl sm:text-5xl font-black uppercase tracking-tighter text-white">Team Totals</h2>
-                  <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] sm:text-xs">Final Session Results</p>
+                  <h2 
+                    className="font-black uppercase tracking-tighter text-white"
+                    style={{ fontSize: deviceInfo.isPhone ? '1.875rem' : '3rem' }}
+                  >
+                    Team Totals
+                  </h2>
+                  <p 
+                    className="text-slate-500 font-bold uppercase tracking-widest"
+                    style={{ fontSize: deviceInfo.isPhone ? '10px' : '0.75rem' }}
+                  >
+                    Final Session Results
+                  </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 sm:gap-8 items-center">
-                  <div className="space-y-2 sm:space-y-4">
-                    <div className="h-6 sm:h-8">
-                      <FittingText text={team1Name || 'TEAM 1'} maxFontSize={24} minFontSize={12} className="justify-start font-black uppercase tracking-tight" style={{ color: player1.highlightColor }} />
+                <div 
+                  className="grid grid-cols-2 items-center"
+                  style={{ gap: deviceInfo.isPhone ? '1rem' : '2rem' }}
+                >
+                  <div className="space-y-2" style={{ gap: deviceInfo.isPhone ? '0.5rem' : '1rem' }}>
+                    <div style={{ height: deviceInfo.isPhone ? '1.5rem' : '2rem' }}>
+                      <FittingText 
+                        text={team1Name || 'TEAM 1'} 
+                        maxFontSize={24} 
+                        minFontSize={12} 
+                        className="justify-start font-black uppercase tracking-tight" 
+                        style={{ color: player1.highlightColor }} 
+                        fontSize={sharedTotalsFontSize}
+                        onFontSizeCalculated={setTotalsT1FontSize}
+                      />
                     </div>
-                    <p className="text-5xl sm:text-8xl font-black text-white tabular-nums">
+                    <p 
+                      className="font-black text-white tabular-nums"
+                      style={{ fontSize: deviceInfo.isPhone ? '3rem' : '6rem' }}
+                    >
                       {teamTotals.t1}
                     </p>
                   </div>
-                  <div className="space-y-2 sm:space-y-4">
-                    <div className="h-6 sm:h-8">
-                      <FittingText text={team2Name || 'TEAM 2'} maxFontSize={24} minFontSize={12} className="justify-start font-black uppercase tracking-tight" style={{ color: player2.highlightColor }} />
+                  <div className="space-y-2" style={{ gap: deviceInfo.isPhone ? '0.5rem' : '1rem' }}>
+                    <div style={{ height: deviceInfo.isPhone ? '1.5rem' : '2rem' }}>
+                      <FittingText 
+                        text={team2Name || 'TEAM 2'} 
+                        maxFontSize={24} 
+                        minFontSize={12} 
+                        className="justify-start font-black uppercase tracking-tight" 
+                        style={{ color: player2.highlightColor }} 
+                        fontSize={sharedTotalsFontSize}
+                        onFontSizeCalculated={setTotalsT2FontSize}
+                      />
                     </div>
-                    <p className="text-5xl sm:text-8xl font-black text-white tabular-nums">
+                    <p 
+                      className="font-black text-white tabular-nums"
+                      style={{ fontSize: deviceInfo.isPhone ? '3rem' : '6rem' }}
+                    >
                       {teamTotals.t2}
                     </p>
                   </div>
@@ -1240,10 +1313,13 @@ export default function App() {
                       setShowTeamTotals(false);
                       setView('teams');
                     }}
-                    className="w-full h-14 sm:h-20 text-slate-950 rounded-2xl sm:rounded-3xl font-black text-lg sm:text-2xl uppercase tracking-widest transition-all active:scale-95"
+                    className="w-full text-slate-950 font-black uppercase tracking-widest transition-all active:scale-95"
                     style={{ 
                       backgroundImage: `linear-gradient(to right, ${player1.highlightColor}, ${player2.highlightColor})`,
-                      boxShadow: `0 10px 20px ${player1.highlightColor}33`
+                      boxShadow: `0 10px 20px ${player1.highlightColor}33`,
+                      height: deviceInfo.isPhone ? '3.5rem' : '5rem',
+                      borderRadius: deviceInfo.isPhone ? '1rem' : '1.5rem',
+                      fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem'
                     }}
                   >
                     Close Results
@@ -1255,16 +1331,16 @@ export default function App() {
       </motion.main>
 
       {/* Navigation Bar Spacing for history view */}
-      {view !== 'scoreboard' && <div className="h-16 lg:h-32" />}
+      {view !== 'scoreboard' && <div style={{ height: 'var(--nav-height)' }} />}
 
       {/* Quick Actions Floating Bar (Mobile) */}
       <AnimatePresence>
-        {view !== 'scoreboard' && (
+        {view !== 'scoreboard' && deviceInfo.isPhone && !deviceInfo.isLandscape && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/90 backdrop-blur-xl border-2 p-2 rounded-2xl shadow-2xl md:hidden z-50 bar-zoom landscape:hidden"
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/90 backdrop-blur-xl border-2 p-2 rounded-2xl shadow-2xl z-[100] bar-zoom pointer-events-auto"
               style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
             >
             <Tooltip text="Scoreboard" position="top">

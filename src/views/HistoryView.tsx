@@ -10,6 +10,7 @@ interface HistoryViewProps {
   matchHistory: MatchHistoryEntry[];
   setShowClearHistoryConfirm: (show: boolean) => void;
   formatTime: (seconds: number) => string;
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
 }
 
 export const HistoryView: React.FC<HistoryViewProps> = ({
@@ -17,7 +18,8 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
   player2,
   matchHistory,
   setShowClearHistoryConfirm,
-  formatTime
+  formatTime,
+  deviceInfo
 }) => {
   return (
     <motion.div
@@ -28,8 +30,10 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
       className="space-y-12 pb-20"
     >
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 transition-all duration-500"
+        className="flex flex-col justify-between gap-6 pb-8 transition-all duration-500"
         style={{ 
+          flexDirection: deviceInfo.isPhone ? 'column' : 'row',
+          alignItems: deviceInfo.isPhone ? 'stretch' : 'center',
           borderBottom: '2px solid',
           borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`
         }}
@@ -65,11 +69,15 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
             <motion.div 
               key={match.id}
               layout
-              className="bg-black border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-xl hover:border-slate-700 transition-all group relative overflow-hidden"
+              className="bg-black border border-slate-800 rounded-3xl shadow-xl hover:border-slate-700 transition-all group relative overflow-hidden"
+              style={{ padding: deviceInfo.isPhone ? '1.5rem' : '2rem' }}
             >
               <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div 
+                className="flex flex-col justify-between gap-8"
+                style={{ flexDirection: deviceInfo.isDesktop ? 'row' : 'column', alignItems: deviceInfo.isDesktop ? 'center' : 'stretch' }}
+              >
                 <div className="flex items-center gap-6">
                   <div className="flex flex-col items-center justify-center w-16 h-16 bg-slate-900 rounded-2xl border border-slate-800">
                     <Calendar className="w-5 h-5 text-slate-500 mb-1" />
@@ -88,33 +96,45 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   </div>
                 </div>
 
-                <div className="flex-1 flex items-center justify-center gap-4 sm:gap-12">
+                <div className="flex-1 flex items-center justify-center" style={{ gap: deviceInfo.isPhone ? '1rem' : '3rem' }}>
                   <div className="flex flex-col items-end gap-1 flex-1">
-                    <span className={`text-lg sm:text-2xl font-black uppercase tracking-tight ${match.winner === match.player1 ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    <span 
+                      className={`font-black uppercase tracking-tight ${match.winner === match.player1 ? 'text-emerald-400' : 'text-slate-400'}`}
+                      style={{ fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem' }}
+                    >
                       {match.player1}
                     </span>
                     <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Player 1</span>
                   </div>
 
-                  <div className="flex items-center gap-4 sm:gap-8">
-                    <span className={`text-4xl sm:text-6xl font-black tabular-nums ${match.winner === match.player1 ? 'text-white' : 'text-slate-600'}`}>
+                  <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '1rem' : '2rem' }}>
+                    <span 
+                      className={`font-black tabular-nums ${match.winner === match.player1 ? 'text-white' : 'text-slate-600'}`}
+                      style={{ fontSize: deviceInfo.isPhone ? '2.25rem' : '3.75rem' }}
+                    >
                       {match.score1}
                     </span>
                     <div className="h-12 w-px bg-slate-800" />
-                    <span className={`text-4xl sm:text-6xl font-black tabular-nums ${match.winner === match.player2 ? 'text-white' : 'text-slate-600'}`}>
+                    <span 
+                      className={`font-black tabular-nums ${match.winner === match.player2 ? 'text-white' : 'text-slate-600'}`}
+                      style={{ fontSize: deviceInfo.isPhone ? '2.25rem' : '3.75rem' }}
+                    >
                       {match.score2}
                     </span>
                   </div>
 
                   <div className="flex flex-col items-start gap-1 flex-1">
-                    <span className={`text-lg sm:text-2xl font-black uppercase tracking-tight ${match.winner === match.player2 ? 'text-emerald-400' : 'text-slate-400'}`}>
+                    <span 
+                      className={`font-black uppercase tracking-tight ${match.winner === match.player2 ? 'text-emerald-400' : 'text-slate-400'}`}
+                      style={{ fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem' }}
+                    >
                       {match.player2}
                     </span>
                     <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Player 2</span>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-6 lg:w-48">
+                <div className="flex items-center justify-end gap-6" style={{ width: deviceInfo.isDesktop ? '12rem' : 'auto' }}>
                   <div className="text-right">
                     <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Winner</p>
                     <div className="flex items-center gap-2 text-emerald-400">

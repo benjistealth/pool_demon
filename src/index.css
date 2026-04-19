@@ -9,25 +9,30 @@
 }
 
 :root {
-  --sidebar-width: 48px;
-  --gameplay-width: calc(100vw - 96px);
-  --circle-offset: calc(100% + 2rem);
-}
-
-@media (min-width: 640px) {
-  :root {
-    --sidebar-width: 80px;
-    --gameplay-width: calc(100vw - 160px);
-    --circle-offset: calc(100% + 2rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  :root {
-    --sidebar-width: 120px;
-    --gameplay-width: min(1100px, calc(100vw - 240px));
-    --circle-offset: calc((100vw - var(--gameplay-width)) / 4 + 4.5rem);
-  }
+  --sidebar-width: 1.04vw;
+  --gameplay-width: calc(100vw - 2.1vw);
+  --circle-offset: calc(100% + 1.66vw);
+  
+  /* Eye sizes controlled by CSS for guaranteed responsiveness */
+  /* Converted from 6rem (96px) and 2.5rem (40px) */
+  --eye-size: 5.5vw;
+  --eye-icon-size: 2.3vw;
+  --nav-btn-size: 10.8vh;
+  --nav-icon-size: 9.72vh;
+  --devil-head-size: 13vh;
+  --nav-gap: 1vh;
+  --logo-height: 10vh;
+  --nav-height: 12vh;
+  --content-padding: 10vh;
+  --timer-w: 3.3vw;
+  --timer-h: 8.3vh;
+  --timer-font: 3.5vh;
+  --eye-top: calc(35% - 2vh);
+  --eye-gap: calc(10% + 4vw);
+  --score-size: min(13vw, 27vh);
+  --finish-bottom: calc(15% - 8vh);
+  --finish-scale: 4.0;
+  --skull-height: 77vh;
 }
 
 @layer base {
@@ -39,52 +44,6 @@
 @layer utilities {
   .responsive-zoom {
     @apply transition-all duration-500 origin-top;
-  }
-
-  /* Mobile Portrait */
-  @media (max-width: 639px) and (orientation: portrait) {
-    .responsive-zoom {
-      @apply origin-top;
-    }
-    .nav-zoom {
-      @apply origin-top-left w-full;
-    }
-    .bar-zoom {
-      @apply origin-bottom;
-    }
-    .gameplay-card {
-      height: 28vh !important;
-    }
-  }
-
-  /* Mobile Landscape */
-  @media (max-width: 950px) and (orientation: landscape) {
-    .responsive-zoom {
-      @apply origin-top;
-    }
-    .nav-zoom {
-      @apply origin-top-left w-full;
-    }
-    .bar-zoom {
-      @apply origin-bottom;
-    }
-    .gameplay-card {
-      height: 65vh !important;
-      min-height: 120px !important;
-    }
-  }
-
-  /* Tablet Landscape */
-  @media (min-width: 951px) and (max-width: 1180px) and (orientation: landscape) {
-    .responsive-zoom {
-      @apply origin-top;
-    }
-    .nav-zoom {
-      @apply origin-top-left w-full;
-    }
-    .bar-zoom {
-      @apply origin-bottom;
-    }
   }
 }
 

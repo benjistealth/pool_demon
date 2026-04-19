@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 
 interface FittingTextProps {
   text: string;
@@ -7,6 +7,8 @@ interface FittingTextProps {
   minFontSize?: number;
   vertical?: boolean;
   style?: React.CSSProperties;
+  fontSize?: number;
+  onFontSizeCalculated?: (size: number) => void;
 }
 
 export const FittingText: React.FC<FittingTextProps> = ({ 
@@ -15,63 +17,101 @@ export const FittingText: React.FC<FittingTextProps> = ({
   maxFontSize = 32, 
   minFontSize = 8,
   vertical = false,
-  style = {}
+  style = {},
+  fontSize: forcedFontSize,
+  onFontSizeCalculated
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
-  const [fontSize, setFontSize] = useState(maxFontSize);
+  const [internalFontSize, setInternalFontSize] = useState(maxFontSize);
 
-  useEffect(() => {
+  // The size we actually use for rendering is the forced one (sync) or our own best fit
+  const currentFontSize = forcedFontSize !== undefined ? forcedFontSize : internalFontSize;
+
+  const onFontSizeCalculatedRef = useRef(onFontSizeCalculated);
+  onFontSizeCalculatedRef.current = onFontSizeCalculated;
+
+  useLayoutEffect(() => {
     const container = containerRef.current;
-    const textElement = textRef.current;
-    if (!container || !textElement) return;
+    if (!container) return;
 
     const adjustFontSize = () => {
-      let currentSize = maxFontSize;
-      setFontSize(currentSize);
+      const cW = container.clientWidth;
+      const cH = container.clientHeight;
       
-      requestAnimationFrame(() => {
-        if (!textRef.current || !containerRef.current) return;
-        
-        const isOverflowing = vertical 
-          ? textRef.current.scrollHeight > containerRef.current.clientHeight
-          : textRef.current.scrollWidth > containerRef.current.clientWidth;
+      if (cW === 0 || cH === 0) return;
 
-        while (
-          (vertical 
-            ? textRef.current.scrollHeight > containerRef.current.clientHeight 
-            : textRef.current.scrollWidth > containerRef.current.clientWidth) && 
-          currentSize > minFontSize
-        ) {
-          currentSize -= 1;
-          textRef.current.style.fontSize = `${currentSize}px`;
+      const measureEl = document.createElement('span');
+      measureEl.style.visibility = 'hidden';
+      measureEl.style.position = 'absolute';
+      measureEl.style.whiteSpace = 'nowrap';
+      measureEl.style.textTransform = 'uppercase';
+      measureEl.className = className;
+      if (vertical) measureEl.classList.add('vertical-text');
+      measureEl.textContent = text;
+      document.body.appendChild(measureEl);
+
+      let low = minFontSize;
+      let high = maxFontSize;
+      let bestSize = minFontSize;
+
+      const checkOverflow = (size: number) => {
+        // Measure using pixels to be precise and avoid Vh calculation delays
+        const pxSize = size * 0.0925 * (window.innerHeight / 100);
+        measureEl.style.fontSize = `${pxSize}px`;
+        measureEl.style.lineHeight = '1';
+        const rect = measureEl.getBoundingClientRect();
+        return rect.width > (cW + 0.1) || rect.height > (cH + 0.1);
+      };
+
+      while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+        if (checkOverflow(mid)) {
+          high = mid - 1;
+        } else {
+          bestSize = mid;
+          low = mid + 1;
         }
-        setFontSize(currentSize);
-      });
+      }
+
+      document.body.removeChild(measureEl);
+      
+      setInternalFontSize(bestSize);
+      if (onFontSizeCalculatedRef.current) {
+        onFontSizeCalculatedRef.current(bestSize);
+      }
     };
 
-    const resizeObserver = new ResizeObserver(() => {
-      adjustFontSize();
-    });
-
+    const resizeObserver = new ResizeObserver(adjustFontSize);
     resizeObserver.observe(container);
-    adjustFontSize(); // Initial adjustment
+    
+    // Initial calculation
+    adjustFontSize();
+    
+    // Extra checks for hydration/layout shifts
+    const timer1 = setTimeout(adjustFontSize, 100);
+    const timer2 = setTimeout(adjustFontSize, 500);
 
     return () => {
       resizeObserver.disconnect();
+      clearTimeout(timer1);
+      clearTimeout(timer2);
     };
-  }, [text, maxFontSize, minFontSize]);
+  }, [text, maxFontSize, minFontSize, vertical, className]);
 
   return (
     <div 
       ref={containerRef} 
-      className={`w-full h-full flex items-center overflow-hidden ${className}`}
+      className={`w-full h-full flex items-center justify-center overflow-hidden ${className}`}
       style={style}
     >
       <span 
         ref={textRef} 
-        className="whitespace-nowrap transition-[font-size] duration-200"
-        style={{ fontSize: `${fontSize}px` }}
+        className="whitespace-nowrap transition-all duration-300 text-center"
+        style={{ 
+          fontSize: `${currentFontSize * 0.0925}vh`,
+          lineHeight: '1'
+        }}
       >
         {text}
       </span>

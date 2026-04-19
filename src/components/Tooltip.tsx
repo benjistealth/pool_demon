@@ -15,9 +15,21 @@ export const Tooltip: React.FC<TooltipProps> = ({
   delay = 0.3
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isHoverSupported, setIsHoverSupported] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  useEffect(() => {
+    // Check if device supports hover
+    const mediaQuery = window.matchMedia('(hover: hover)');
+    setIsHoverSupported(mediaQuery.matches);
+
+    const handler = (e: MediaQueryListEvent) => setIsHoverSupported(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
   const showTooltip = () => {
+    if (!isHoverSupported) return;
     timeoutRef.current = setTimeout(() => {
       setIsVisible(true);
     }, delay * 1000);
@@ -75,7 +87,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
               zIndex: 10000 
             }}
           >
-            <span className="text-[10px] md:text-xs font-bold text-slate-100 tracking-wider uppercase">
+            <span className="text-[10px] font-bold text-slate-100 tracking-wider uppercase">
               {text}
             </span>
             {/* Arrow */}

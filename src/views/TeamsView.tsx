@@ -25,7 +25,121 @@ interface TeamsViewProps {
   getMatchResult: (p1: string, p2: string) => MatchHistoryEntry | undefined;
   clearMatchResult: (p1: string, p2: string) => void;
   formatTime: (seconds: number) => string;
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
 }
+
+interface MatchupRowProps {
+  idx: number;
+  p1: string;
+  p2: string;
+  selectedMatchIndex: number | null;
+  selectTeamMatch: (index: number) => void;
+  getMatchResult: (p1: string, p2: string) => MatchHistoryEntry | undefined;
+  clearMatchResult: (p1: string, p2: string) => void;
+  formatTime: (seconds: number) => string;
+  deviceInfo: { isPhone: boolean; isTablet: boolean; isDesktop: boolean; isLandscape: boolean };
+}
+
+const MatchupRow: React.FC<MatchupRowProps> = ({ 
+  idx, 
+  p1, 
+  p2, 
+  selectedMatchIndex, 
+  selectTeamMatch, 
+  getMatchResult, 
+  clearMatchResult, 
+  formatTime,
+  deviceInfo
+}) => {
+  const [p1FontSize, setP1FontSize] = React.useState(16);
+  const [p2FontSize, setP2FontSize] = React.useState(16);
+  const sharedFontSize = Math.min(p1FontSize, p2FontSize);
+
+  const p1Name = p1 || `PLAYER ${idx + 1}`;
+  const p2Name = p2 || `PLAYER ${idx + 1}`;
+  const lastMatch = getMatchResult(p1Name, p2Name);
+
+  return (
+    <tr 
+      onClick={() => selectTeamMatch(idx)}
+      className={`group cursor-pointer transition-colors hover:bg-emerald-500/5 ${selectedMatchIndex === idx ? 'bg-emerald-500/10' : ''}`}
+    >
+      <td className="py-2 font-black text-slate-600 truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh' }}>#{idx + 1}</td>
+      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>
+        {p1 ? (
+          <FittingText 
+            text={p1} 
+            maxFontSize={deviceInfo.isPhone ? 8 : 16} 
+            minFontSize={4} 
+            className="justify-start" 
+            fontSize={sharedFontSize}
+            onFontSizeCalculated={setP1FontSize}
+          />
+        ) : (
+          <span className="text-slate-700 italic">EMPTY</span>
+        )}
+      </td>
+      <td className="py-2 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>VS</td>
+      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>
+        {p2 ? (
+          <FittingText 
+            text={p2} 
+            maxFontSize={deviceInfo.isPhone ? 8 : 16} 
+            minFontSize={4} 
+            className="justify-start" 
+            fontSize={sharedFontSize}
+            onFontSizeCalculated={setP2FontSize}
+          />
+        ) : (
+          <span className="text-slate-700 italic">EMPTY</span>
+        )}
+      </td>
+      <td className="py-2" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
+        {lastMatch ? (
+          <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '0.2vw' : '0.4vw' }}>
+            <span className="font-bold rounded" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw', backgroundColor: lastMatch.winner === p1Name ? 'rgba(16, 185, 129, 0.2)' : 'rgb(30, 41, 59)', color: lastMatch.winner === p1Name ? 'rgb(52, 211, 153)' : 'rgb(148, 163, 184)' }}>
+              {lastMatch.score1}-{lastMatch.score2}
+            </span>
+            <span className="text-slate-500 font-bold uppercase truncate" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.9vh' }}>{new Date(lastMatch.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</span>
+          </div>
+        ) : (
+          <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '0.2vw' : '0.4vw' }}>
+            <span className="font-bold rounded bg-slate-800 text-slate-600" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw' }}>
+              0-0
+            </span>
+            <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.9vh' }}>READY</span>
+          </div>
+        )}
+      </td>
+      <td className="py-2" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
+        {lastMatch && (lastMatch.shotClockSetting || lastMatch.matchClockRemaining !== undefined) ? (
+          <div className="flex flex-col gap-0">
+            {lastMatch.shotClockSetting && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.8vh' }}>S:{lastMatch.shotClockSetting}</span>}
+            {lastMatch.matchClockRemaining !== undefined && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.8vh' }}>M:{formatTime(lastMatch.matchClockRemaining)}</span>}
+          </div>
+        ) : (
+          <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '0.9vh' }}>-</span>
+        )}
+      </td>
+      <td className="py-2 text-right" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
+        {lastMatch && (
+          <Tooltip text="Clear Result" position="left">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                clearMatchResult(p1Name, p2Name);
+              }}
+              className="text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
+              style={{ padding: deviceInfo.isPhone ? '0.4vh' : '0.8vh' }}
+            >
+              <Trash2 style={{ width: deviceInfo.isPhone ? '3vw' : '0.8vw', height: deviceInfo.isPhone ? '3vw' : '0.8vw' }} />
+            </button>
+          </Tooltip>
+        )}
+      </td>
+    </tr>
+  );
+};
 
 export const TeamsView: React.FC<TeamsViewProps> = ({
   player1,
@@ -45,11 +159,15 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
   selectTeamMatch,
   getMatchResult,
   clearMatchResult,
-  formatTime
+  formatTime,
+  deviceInfo
 }) => {
   const battlesRef = useRef<HTMLDivElement>(null);
   const scrollInitiated = useRef(false);
   const [exportFormat, setExportFormat] = React.useState<'CSV' | 'JSON'>('CSV');
+  const [headerT1FontSize, setHeaderT1FontSize] = React.useState(10);
+  const [headerT2FontSize, setHeaderT2FontSize] = React.useState(10);
+  const sharedHeaderFontSize = Math.min(headerT1FontSize, headerT2FontSize);
 
   // Reset scroll to top immediately on mount to prevent jumps
   React.useLayoutEffect(() => {
@@ -119,8 +237,10 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
       className="space-y-12 pb-20 min-h-screen"
     >
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 transition-all duration-500"
+        className="flex flex-col justify-between gap-6 pb-8 transition-all duration-500"
         style={{ 
+          flexDirection: deviceInfo.isPhone ? 'column' : 'row',
+          alignItems: deviceInfo.isPhone ? 'stretch' : 'center',
           borderBottom: '2px solid',
           borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`
         }}
@@ -172,39 +292,51 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
             <Tooltip text="Export Match History" position="bottom">
               <button 
                 onClick={exportFormat === 'CSV' ? downloadData : downloadJSON}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all font-bold text-xs border md:text-sm md:px-4 md:py-2 md:rounded-xl md:border-2"
+                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 transition-all font-bold"
                 style={{ 
                   borderColor: player2.highlightColor,
                   color: player2.highlightColor,
-                  backgroundColor: player2.highlightColor + '11'
+                  backgroundColor: player2.highlightColor + '11',
+                  padding: deviceInfo.isPhone ? '6px 12px' : '8px 16px',
+                  borderRadius: deviceInfo.isPhone ? '8px' : '12px',
+                  borderWidth: deviceInfo.isPhone ? '1px' : '2px',
+                  fontSize: deviceInfo.isPhone ? '12px' : '14px'
                 }}
               >
-                <Download className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: player2.highlightColor }} />
+                <Download style={{ width: deviceInfo.isPhone ? '14px' : '16px', height: deviceInfo.isPhone ? '14px' : '16px', color: player2.highlightColor }} />
                 Export
               </button>
             </Tooltip>
             <Tooltip text="Import Match History" position="bottom">
               <button 
                 onClick={uploadData}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded-lg transition-all font-bold text-xs border md:text-sm md:px-4 md:py-2 md:rounded-xl md:border-2"
+                className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 transition-all font-bold"
                 style={{ 
                   borderColor: player2.highlightColor,
                   color: player2.highlightColor,
-                  backgroundColor: player2.highlightColor + '11'
+                  backgroundColor: player2.highlightColor + '11',
+                  padding: deviceInfo.isPhone ? '6px 12px' : '8px 16px',
+                  borderRadius: deviceInfo.isPhone ? '8px' : '12px',
+                  borderWidth: deviceInfo.isPhone ? '1px' : '2px',
+                  fontSize: deviceInfo.isPhone ? '12px' : '14px'
                 }}
               >
-                <Upload className="w-3.5 h-3.5 md:w-4 md:h-4" style={{ color: player2.highlightColor }} />
+                <Upload style={{ width: deviceInfo.isPhone ? '14px' : '16px', height: deviceInfo.isPhone ? '14px' : '16px', color: player2.highlightColor }} />
                 Import
               </button>
             </Tooltip>
             <Tooltip text="Clear All Data" position="bottom">
               <button 
                 onClick={() => setShowClearTeamsConfirm(true)}
-                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-bold rounded-xl transition-all border-2"
+                className="items-center gap-2 font-bold transition-all border-2"
                 style={{ 
+                  display: deviceInfo.isPhone ? 'none' : 'flex',
                   borderColor: player2.highlightColor,
                   color: player2.highlightColor,
-                  backgroundColor: player2.highlightColor + '11'
+                  backgroundColor: player2.highlightColor + '11',
+                  padding: '8px 16px',
+                  borderRadius: '12px',
+                  fontSize: '14px'
                 }}
               >
                 <Trash2 className="w-4 h-4" style={{ color: player2.highlightColor }} />
@@ -215,7 +347,13 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 landscape:grid-cols-2 gap-6 sm:gap-10">
+      <div 
+        className="grid gap-6"
+        style={{ 
+          gridTemplateColumns: (!deviceInfo.isPhone || deviceInfo.isLandscape) ? '1fr 1fr' : '1fr',
+          gap: deviceInfo.isPhone ? '1.5rem' : '2.5rem'
+        }}
+      >
         {/* Team 1 Setup */}
         <div className="space-y-8">
           <div className="space-y-4">
@@ -402,23 +540,46 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
               </colgroup>
               <thead>
                 <tr className="bg-blue-600/20 border-b border-slate-800">
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">MATCH (V5)</th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">
-                    <FittingText text={team1Name || 'TEAM A'} maxFontSize={10} minFontSize={4} className="justify-start" />
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>MATCH (V5)</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
+                    <FittingText 
+                      text={team1Name || 'TEAM A'} 
+                      maxFontSize={deviceInfo.isPhone ? 6 : 10} 
+                      minFontSize={4} 
+                      className="justify-start" 
+                      fontSize={sharedHeaderFontSize}
+                      onFontSizeCalculated={setHeaderT1FontSize}
+                    />
                   </th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500 text-center">VS</th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">
-                    <FittingText text={team2Name || 'TEAM B'} maxFontSize={10} minFontSize={4} className="justify-start" />
+                  <th className="py-2 font-bold uppercase text-center" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>VS</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
+                    <FittingText 
+                      text={team2Name || 'TEAM B'} 
+                      maxFontSize={deviceInfo.isPhone ? 6 : 10} 
+                      minFontSize={4} 
+                      className="justify-start" 
+                      fontSize={sharedHeaderFontSize}
+                      onFontSizeCalculated={setHeaderT2FontSize}
+                    />
                   </th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">Last Result</th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500">Clock</th>
-                  <th className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-[10px] font-bold uppercase tracking-tighter md:tracking-widest text-slate-500 text-right">Action</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Last Result</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Clock</th>
+                  <th className="py-2 font-bold uppercase text-right" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {Math.max(team1Players.length, team2Players.length) === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-2 sm:px-6 py-4 sm:py-12 text-center text-slate-500 italic text-[10px] md:text-base">Add players to generate matchups.</td>
+                    <td 
+                      colSpan={7} 
+                      className="text-center text-slate-500 italic"
+                      style={{ 
+                        padding: deviceInfo.isPhone ? '1rem 0.5rem' : '3rem 1.5rem',
+                        fontSize: deviceInfo.isPhone ? '10px' : '16px'
+                      }}
+                    >
+                      Add players to generate matchups.
+                    </td>
                   </tr>
                 ) : (
                   <>
@@ -428,97 +589,49 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                       
                       if (!p1 && !p2) return null;
 
-                      const p1Name = p1 || `PLAYER ${idx + 1}`;
-                      const p2Name = p2 || `PLAYER ${idx + 1}`;
-                      const lastMatch = getMatchResult(p1Name, p2Name);
-                      
                       return (
-                        <tr 
-                          key={idx} 
-                          onClick={() => selectTeamMatch(idx)}
-                          className={`group cursor-pointer transition-colors hover:bg-emerald-500/5 ${selectedMatchIndex === idx ? 'bg-emerald-500/10' : ''}`}
-                        >
-                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-[4px] md:text-xs font-black text-slate-600 truncate">#{idx + 1}</td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors text-[4px] md:text-base truncate">
-                            {p1 ? <FittingText text={p1} maxFontSize={16} minFontSize={4} className="justify-start" /> : <span className="text-slate-700 italic">EMPTY</span>}
-                          </td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-center text-slate-700 font-black text-[4px] md:text-base">VS</td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors text-[4px] md:text-base truncate">
-                            {p2 ? <FittingText text={p2} maxFontSize={16} minFontSize={4} className="justify-start" /> : <span className="text-slate-700 italic">EMPTY</span>}
-                          </td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4">
-                            {lastMatch ? (
-                              <div className="flex items-center gap-0.5 sm:gap-2">
-                                <span className={`text-[4px] md:text-xs font-bold px-0.5 sm:px-2 py-0.5 rounded ${lastMatch.winner === p1Name ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-800 text-slate-400'}`}>
-                                  {lastMatch.score1}-{lastMatch.score2}
-                                </span>
-                                <span className="text-[3px] md:text-[10px] text-slate-500 font-bold uppercase truncate">{new Date(lastMatch.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-0.5 sm:gap-2">
-                                <span className="text-[4px] md:text-xs font-bold px-0.5 sm:px-2 py-0.5 rounded bg-slate-800 text-slate-600">
-                                  0-0
-                                </span>
-                                <span className="text-[3px] md:text-[10px] text-slate-600 font-bold uppercase">READY</span>
-                              </div>
-                            )}
-                          </td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4">
-                            {lastMatch && (lastMatch.shotClockSetting || lastMatch.matchClockRemaining !== undefined) ? (
-                              <div className="flex flex-col gap-0">
-                                {lastMatch.shotClockSetting && <span className="text-[3px] md:text-[9px] font-bold text-slate-500">S:{lastMatch.shotClockSetting}</span>}
-                                {lastMatch.matchClockRemaining !== undefined && <span className="text-[3px] md:text-[9px] font-bold text-slate-500">M:{formatTime(lastMatch.matchClockRemaining)}</span>}
-                              </div>
-                            ) : (
-                              <span className="text-[4px] md:text-[10px] text-slate-600 font-bold uppercase">-</span>
-                            )}
-                          </td>
-                          <td className="px-0 sm:px-6 py-2 sm:py-4 text-right">
-                            {lastMatch && (
-                              <Tooltip text="Clear Result" position="left">
-                                <button 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    clearMatchResult(p1Name, p2Name);
-                                  }}
-                                  className="p-1 sm:p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
-                                >
-                                  <Trash2 className="w-3 md:w-4 h-3 md:h-4" />
-                                </button>
-                              </Tooltip>
-                            )}
-                          </td>
-                        </tr>
+                        <MatchupRow 
+                          key={idx}
+                          idx={idx}
+                          p1={p1}
+                          p2={p2}
+                          selectedMatchIndex={selectedMatchIndex}
+                          selectTeamMatch={selectTeamMatch}
+                          getMatchResult={getMatchResult}
+                          clearMatchResult={clearMatchResult}
+                          formatTime={formatTime}
+                          deviceInfo={deviceInfo}
+                        />
                       );
                     })}
                     {/* Totals Row */}
                     <tr className="bg-slate-800/80 border-t-2 border-slate-700 font-black">
-                      <td className="px-2 sm:px-6 py-3 sm:py-5 text-[7px] md:text-[10px] uppercase tracking-[0.2em] text-emerald-500">Total Score</td>
-                      <td className="px-2 sm:px-6 py-3 sm:py-5">
+                      <td className="py-3 uppercase text-emerald-500" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '7px' : '10px', letterSpacing: '0.2em' }}>Total Score</td>
+                      <td className="py-3" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
                         <div className="flex flex-col">
-                          <span className="text-lg md:text-2xl text-emerald-400 tabular-nums">{teamTotals.t1}</span>
-                          <span className="text-[7px] md:text-[8px] text-slate-500 uppercase tracking-tighter">{team1Name}</span>
+                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '18px' : '24px' }}>{teamTotals.t1}</span>
+                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '7px' : '8px' }}>{team1Name}</span>
                         </div>
                       </td>
-                      <td className="px-2 sm:px-6 py-3 sm:py-5 text-center text-slate-700 font-black text-[10px] md:text-base">SUM</td>
-                      <td className="px-2 sm:px-6 py-3 sm:py-5">
+                      <td className="py-3 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '10px' : '16px' }}>SUM</td>
+                      <td className="py-3" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
                         <div className="flex flex-col">
-                          <span className="text-lg md:text-2xl text-emerald-400 tabular-nums">{teamTotals.t2}</span>
-                          <span className="text-[7px] md:text-[8px] text-slate-500 uppercase tracking-tighter">{team2Name}</span>
+                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '18px' : '24px' }}>{teamTotals.t2}</span>
+                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '7px' : '8px' }}>{team2Name}</span>
                         </div>
                       </td>
-                      <td colSpan={3} className="px-2 sm:px-6 py-3 sm:py-5 bg-slate-900/50">
-                        <div className="flex items-center justify-end gap-2 md:gap-4">
+                      <td colSpan={3} className="py-3 bg-slate-900/50" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
+                        <div className="flex items-center justify-end" style={{ gap: deviceInfo.isPhone ? '8px' : '16px' }}>
                           <div className="flex flex-col items-end">
-                            <span className="text-[7px] md:text-[10px] text-slate-500 uppercase font-bold">Overall Lead</span>
-                            <span className="text-[10px] md:text-sm font-black text-slate-100">
+                            <span className="text-slate-500 uppercase font-bold" style={{ fontSize: deviceInfo.isPhone ? '7px' : '10px' }}>Overall Lead</span>
+                            <span className="font-black text-slate-100" style={{ fontSize: deviceInfo.isPhone ? '10px' : '14px' }}>
                               {teamTotals.t1 === teamTotals.t2 ? 'TIED' : 
                                teamTotals.t1 > teamTotals.t2 ? `${team1Name} (+${teamTotals.t1 - teamTotals.t2})` : 
                                `${team2Name} (+${teamTotals.t2 - teamTotals.t1})`}
                             </span>
                           </div>
-                          <div className="w-6 md:w-10 h-6 md:h-10 rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
-                            <Trophy className="w-3 md:w-5 h-3 md:h-5 text-emerald-400" />
+                          <div className="rounded-full bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20" style={{ width: deviceInfo.isPhone ? '24px' : '40px', height: deviceInfo.isPhone ? '24px' : '40px' }}>
+                            <Trophy className="text-emerald-400" style={{ width: deviceInfo.isPhone ? '12px' : '20px', height: deviceInfo.isPhone ? '12px' : '20px' }} />
                           </div>
                         </div>
                       </td>
@@ -529,7 +642,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
             </table>
           </div>
         </div>
-        <div className="flex justify-center pt-4 md:hidden">
+        <div className={`flex justify-center pt-4 ${!deviceInfo.isPhone ? 'hidden' : ''}`}>
           <Tooltip text="Clear All Data" position="top">
             <button 
               onClick={() => setShowClearTeamsConfirm(true)}

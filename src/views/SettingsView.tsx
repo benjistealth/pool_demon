@@ -26,6 +26,15 @@ interface SettingsViewProps {
   setShotClock: (clock: number) => void;
   pauseTimer: () => void;
   setShowRestoreDefaultsConfirm: (show: boolean) => void;
+  deviceInfo: { 
+    isPhone: boolean; 
+    isTablet: boolean; 
+    isDesktop: boolean; 
+    isLandscape: boolean; 
+    estimatedInches: number;
+    forcedMode: 'auto' | 'phone' | 'tablet' | 'desktop';
+  };
+  setForcedMode: (mode: 'auto' | 'phone' | 'tablet' | 'desktop') => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
@@ -47,7 +56,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
   setShotClockDuration,
   setShotClock,
   pauseTimer,
-  setShowRestoreDefaultsConfirm
+  setShowRestoreDefaultsConfirm,
+  deviceInfo,
+  setForcedMode
 }) => {
   React.useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -80,7 +91,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           >
             Player Customization
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
+          <div 
+            className="grid gap-10"
+            style={{ gridTemplateColumns: deviceInfo.isPhone ? '1fr' : '1fr 1fr' }}
+          >
             {[player1, player2].map((p, idx) => (
               <div 
                 key={p.id} 
@@ -270,10 +284,48 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
           </h3>
           <div className="grid grid-cols-1 gap-6">
             <div 
-              className="bg-black/40 backdrop-blur-sm border-2 rounded-[32px] p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl"
-              style={{ borderColor: player1.highlightColor }}
+              className="bg-black/40 backdrop-blur-sm border-2 rounded-[1.66vw] p-[0.4vw] flex flex-col items-center justify-between gap-6 shadow-xl"
+              style={{ 
+                borderColor: player1.highlightColor,
+                flexDirection: deviceInfo.isPhone ? 'column' : 'row'
+              }}
             >
-              <div className="space-y-1 text-center sm:text-left">
+              <div className="space-y-1" style={{ textAlign: deviceInfo.isPhone ? 'center' : 'left' }}>
+                <p className="text-xl font-black text-slate-200 uppercase tracking-tight">System Diagnostics</p>
+                <div className="space-y-1">
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                    Diagonal: <span className="text-white">{deviceInfo.estimatedInches.toFixed(1)}"</span>
+                  </p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                    Resolution: <span className="text-white">{deviceInfo.width} x {deviceInfo.height}</span>
+                  </p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                    UA Mobile: <span className="text-white">{navigator.userAgent.toLowerCase().includes('mobi') ? 'YES' : 'NO'}</span>
+                  </p>
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                    Touch: <span className="text-white">{'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 'YES' : 'NO'}</span>
+                  </p>
+                </div>
+                <p className="text-[1.1vh] font-bold uppercase tracking-[0.2em] mt-2" style={{ color: player2.highlightColor }}>
+                  Active Mode: Universal Scaled View
+                </p>
+              </div>
+              <div className="flex items-center gap-2 px-6 py-3 bg-slate-800/50 rounded-2xl border border-slate-700">
+                <Layout className="w-4 h-4 text-slate-400" />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-300">
+                  {window.innerWidth} x {window.innerHeight} UNITS
+                </span>
+              </div>
+            </div>
+
+            <div 
+              className="bg-black/40 backdrop-blur-sm border-2 rounded-[32px] p-8 flex flex-col items-center justify-between gap-6 shadow-xl"
+              style={{ 
+                borderColor: player1.highlightColor,
+                flexDirection: deviceInfo.isPhone ? 'column' : 'row'
+              }}
+            >
+              <div className="space-y-1" style={{ textAlign: deviceInfo.isPhone ? 'center' : 'left' }}>
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Restore Default Settings</p>
                 <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Resets all color selections to default.</p>
               </div>

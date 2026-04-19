@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Horns -->
+  <path d="M25 40 C 10 10, 5 30, 15 45" fill="#ff0000" filter="url(#glow)" />
+  <path d="M75 40 C 90 10, 95 30, 85 45" fill="#ff0000" filter="url(#glow)" />
+  <!-- Main Ball -->
+  <circle cx="50" cy="60" r="38" fill="#ff0000" filter="url(#glow)" />
+  <!-- Inner White Circle -->
+  <circle cx="50" cy="60" r="16" fill="white" />
+  <!-- The 8 -->
+  <text x="50" y="67" font-family="Arial, sans-serif" font-size="20" font-weight="900" text-anchor="middle" fill="black">8</text>
+</svg>
