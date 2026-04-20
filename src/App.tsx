@@ -111,8 +111,8 @@ export default function App() {
 
   // Persist forced mode
   useEffect(() => {
-    localStorage.setItem('forced_device_mode', forcedMode);
-  }, [forcedMode]);
+    localStorage.setItem('forced_device_mode', 'desktop');
+  }, ['desktop']);
 
   // Keyboard detection for mobile
   useEffect(() => {
