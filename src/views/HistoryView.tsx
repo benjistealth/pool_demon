@@ -40,7 +40,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
       >
         <div className="space-y-1">
           <h2 className="text-4xl font-black uppercase tracking-tight text-white">Match History</h2>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Review past performances</p>
+          <p className="text-slate-500 font-bold uppercase tracking-widest text-[15px]">Review past performances</p>
         </div>
         <Tooltip text="Delete All Past Matches" position="bottom">
           <button 
@@ -81,16 +81,16 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                 <div className="flex items-center gap-6">
                   <div className="flex flex-col items-center justify-center w-16 h-16 bg-slate-900 rounded-2xl border border-slate-800">
                     <Calendar className="w-5 h-5 text-slate-500 mb-1" />
-                    <span className="text-[10px] font-black text-slate-400 uppercase">
+                    <span className="text-[15px] font-black text-slate-400 uppercase">
                       {new Date(match.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}
                     </span>
                   </div>
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <Hash className="w-3 h-3 text-slate-600" />
-                      <span className="text-[10px] font-black text-slate-600 uppercase tracking-widest">Match ID: {match.id.slice(-6)}</span>
+                      <span className="text-[15px] font-black text-slate-600 uppercase tracking-widest">Match ID: {match.id.slice(-6)}</span>
                     </div>
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <p className="text-[18px] font-bold text-slate-500 uppercase tracking-widest">
                       {match.team1 && match.team2 ? `${match.team1} VS ${match.team2}` : 'Single Match'}
                     </p>
                   </div>
@@ -100,24 +100,24 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   <div className="flex flex-col items-end gap-1 flex-1">
                     <span 
                       className={`font-black uppercase tracking-tight ${match.winner === match.player1 ? 'text-emerald-400' : 'text-slate-400'}`}
-                      style={{ fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem' }}
+                      style={{ fontSize: deviceInfo.isPhone ? '1.7rem' : '2.25rem' }}
                     >
                       {match.player1}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Player 1</span>
+                    <span className="text-[15px] font-bold text-slate-600 uppercase tracking-widest">Player 1</span>
                   </div>
 
                   <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '1rem' : '2rem' }}>
                     <span 
                       className={`font-black tabular-nums ${match.winner === match.player1 ? 'text-white' : 'text-slate-600'}`}
-                      style={{ fontSize: deviceInfo.isPhone ? '2.25rem' : '3.75rem' }}
+                      style={{ fontSize: deviceInfo.isPhone ? '3.4rem' : '5.6rem' }}
                     >
                       {match.score1}
                     </span>
                     <div className="h-12 w-px bg-slate-800" />
                     <span 
                       className={`font-black tabular-nums ${match.winner === match.player2 ? 'text-white' : 'text-slate-600'}`}
-                      style={{ fontSize: deviceInfo.isPhone ? '2.25rem' : '3.75rem' }}
+                      style={{ fontSize: deviceInfo.isPhone ? '3.4rem' : '5.6rem' }}
                     >
                       {match.score2}
                     </span>
@@ -126,20 +126,20 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   <div className="flex flex-col items-start gap-1 flex-1">
                     <span 
                       className={`font-black uppercase tracking-tight ${match.winner === match.player2 ? 'text-emerald-400' : 'text-slate-400'}`}
-                      style={{ fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem' }}
+                      style={{ fontSize: deviceInfo.isPhone ? '1.7rem' : '2.25rem' }}
                     >
                       {match.player2}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Player 2</span>
+                    <span className="text-[15px] font-bold text-slate-600 uppercase tracking-widest">Player 2</span>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-end gap-6" style={{ width: deviceInfo.isDesktop ? '12rem' : 'auto' }}>
                   <div className="text-right">
-                    <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-1">Winner</p>
+                    <p className="text-[15px] font-black text-slate-600 uppercase tracking-widest mb-1">Winner</p>
                     <div className="flex items-center gap-2 text-emerald-400">
                       <Trophy className="w-4 h-4" />
-                      <span className="text-sm font-black uppercase tracking-tight">{match.winner}</span>
+                      <span className="text-[21px] font-black uppercase tracking-tight">{match.winner}</span>
                     </div>
                   </div>
                 </div>
@@ -149,14 +149,14 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                 <div className="mt-6 pt-6 border-t border-slate-800/50 flex flex-wrap gap-4">
                   {match.shotClockSetting && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-lg border border-slate-800">
-                      <span className="text-[9px] font-black text-slate-500 uppercase">Shot Clock:</span>
-                      <span className="text-[10px] font-bold text-slate-300">{match.shotClockSetting}s</span>
+                      <span className="text-[14px] font-black text-slate-500 uppercase">Shot Clock:</span>
+                      <span className="text-[15px] font-bold text-slate-300">{match.shotClockSetting}s</span>
                     </div>
                   )}
                   {match.matchClockRemaining !== undefined && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-slate-900 rounded-lg border border-slate-800">
-                      <span className="text-[9px] font-black text-slate-500 uppercase">Match Clock:</span>
-                      <span className="text-[10px] font-bold text-slate-300">{formatTime(match.matchClockRemaining)}</span>
+                      <span className="text-[14px] font-black text-slate-500 uppercase">Match Clock:</span>
+                      <span className="text-[15px] font-bold text-slate-300">{formatTime(match.matchClockRemaining)}</span>
                     </div>
                   )}
                 </div>

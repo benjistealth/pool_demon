@@ -51,8 +51,8 @@ const MatchupRow: React.FC<MatchupRowProps> = ({
   formatTime,
   deviceInfo
 }) => {
-  const [p1FontSize, setP1FontSize] = React.useState(16);
-  const [p2FontSize, setP2FontSize] = React.useState(16);
+  const [p1FontSize, setP1FontSize] = React.useState(24);
+  const [p2FontSize, setP2FontSize] = React.useState(24);
   const sharedFontSize = Math.min(p1FontSize, p2FontSize);
 
   const p1Name = p1 || `PLAYER ${idx + 1}`;
@@ -64,13 +64,13 @@ const MatchupRow: React.FC<MatchupRowProps> = ({
       onClick={() => selectTeamMatch(idx)}
       className={`group cursor-pointer transition-colors hover:bg-emerald-500/5 ${selectedMatchIndex === idx ? 'bg-emerald-500/10' : ''}`}
     >
-      <td className="py-2 font-black text-slate-600 truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh' }}>#{idx + 1}</td>
-      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>
+      <td className="py-2 font-black text-slate-600 truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '1.35vh' : '3.6vh' }}>#{idx + 1}</td>
+      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '1.35vh' : '5vh' }}>
         {p1 ? (
           <FittingText 
             text={p1} 
-            maxFontSize={deviceInfo.isPhone ? 8 : 16} 
-            minFontSize={4} 
+            maxFontSize={deviceInfo.isPhone ? 27 : 54} 
+            minFontSize={12} 
             className="justify-start" 
             fontSize={sharedFontSize}
             onFontSizeCalculated={setP1FontSize}
@@ -79,13 +79,13 @@ const MatchupRow: React.FC<MatchupRowProps> = ({
           <span className="text-slate-700 italic">EMPTY</span>
         )}
       </td>
-      <td className="py-2 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>VS</td>
-      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '0.4vh' : '1.48vh' }}>
+      <td className="py-2 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '1.35vh' : '5vh' }}>VS</td>
+      <td className="py-2 text-slate-100 uppercase font-bold group-hover:text-emerald-400 transition-colors truncate" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw', fontSize: deviceInfo.isPhone ? '1.35vh' : '5vh' }}>
         {p2 ? (
           <FittingText 
             text={p2} 
-            maxFontSize={deviceInfo.isPhone ? 8 : 16} 
-            minFontSize={4} 
+            maxFontSize={deviceInfo.isPhone ? 27 : 54} 
+            minFontSize={12} 
             className="justify-start" 
             fontSize={sharedFontSize}
             onFontSizeCalculated={setP2FontSize}
@@ -97,28 +97,28 @@ const MatchupRow: React.FC<MatchupRowProps> = ({
       <td className="py-2" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
         {lastMatch ? (
           <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '0.2vw' : '0.4vw' }}>
-            <span className="font-bold rounded" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw', backgroundColor: lastMatch.winner === p1Name ? 'rgba(16, 185, 129, 0.2)' : 'rgb(30, 41, 59)', color: lastMatch.winner === p1Name ? 'rgb(52, 211, 153)' : 'rgb(148, 163, 184)' }}>
+            <span className="font-bold rounded" style={{ fontSize: deviceInfo.isPhone ? '0.6vh' : '1.65vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw', backgroundColor: lastMatch.winner === p1Name ? 'rgba(16, 185, 129, 0.2)' : 'rgb(30, 41, 59)', color: lastMatch.winner === p1Name ? 'rgb(52, 211, 153)' : 'rgb(148, 163, 184)' }}>
               {lastMatch.score1}-{lastMatch.score2}
             </span>
-            <span className="text-slate-500 font-bold uppercase truncate" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.9vh' }}>{new Date(lastMatch.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</span>
+            <span className="text-slate-500 font-bold uppercase truncate" style={{ fontSize: deviceInfo.isPhone ? '0.45vh' : '1.35vh' }}>{new Date(lastMatch.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' })}</span>
           </div>
         ) : (
           <div className="flex items-center" style={{ gap: deviceInfo.isPhone ? '0.2vw' : '0.4vw' }}>
-            <span className="font-bold rounded bg-slate-800 text-slate-600" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '1.1vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw' }}>
+            <span className="font-bold rounded bg-slate-800 text-slate-600" style={{ fontSize: deviceInfo.isPhone ? '0.6vh' : '1.65vh', padding: deviceInfo.isPhone ? '0.2vh' : '0.4vh 0.4vw' }}>
               0-0
             </span>
-            <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.9vh' }}>READY</span>
+            <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.45vh' : '1.35vh' }}>READY</span>
           </div>
         )}
       </td>
       <td className="py-2" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
         {lastMatch && (lastMatch.shotClockSetting || lastMatch.matchClockRemaining !== undefined) ? (
           <div className="flex flex-col gap-0">
-            {lastMatch.shotClockSetting && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.8vh' }}>S:{lastMatch.shotClockSetting}</span>}
-            {lastMatch.matchClockRemaining !== undefined && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.3vh' : '0.8vh' }}>M:{formatTime(lastMatch.matchClockRemaining)}</span>}
+            {lastMatch.shotClockSetting && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.45vh' : '1.2vh' }}>S:{lastMatch.shotClockSetting}</span>}
+            {lastMatch.matchClockRemaining !== undefined && <span className="font-bold text-slate-500" style={{ fontSize: deviceInfo.isPhone ? '0.45vh' : '1.2vh' }}>M:{formatTime(lastMatch.matchClockRemaining)}</span>}
           </div>
         ) : (
-          <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.4vh' : '0.9vh' }}>-</span>
+          <span className="text-slate-600 font-bold uppercase" style={{ fontSize: deviceInfo.isPhone ? '0.6vh' : '1.35vh' }}>-</span>
         )}
       </td>
       <td className="py-2 text-right" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5vw', paddingRight: deviceInfo.isPhone ? '0' : '1.5vw' }}>
@@ -132,7 +132,7 @@ const MatchupRow: React.FC<MatchupRowProps> = ({
               className="text-red-500 hover:bg-red-500/10 rounded-lg transition-colors"
               style={{ padding: deviceInfo.isPhone ? '0.4vh' : '0.8vh' }}
             >
-              <Trash2 style={{ width: deviceInfo.isPhone ? '3vw' : '0.8vw', height: deviceInfo.isPhone ? '3vw' : '0.8vw' }} />
+              <Trash2 style={{ width: deviceInfo.isPhone ? '4.5vw' : '1.2vw', height: deviceInfo.isPhone ? '4.5vw' : '1.2vw' }} />
             </button>
           </Tooltip>
         )}
@@ -165,8 +165,8 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
   const battlesRef = useRef<HTMLDivElement>(null);
   const scrollInitiated = useRef(false);
   const [exportFormat, setExportFormat] = React.useState<'CSV' | 'JSON'>('CSV');
-  const [headerT1FontSize, setHeaderT1FontSize] = React.useState(10);
-  const [headerT2FontSize, setHeaderT2FontSize] = React.useState(10);
+  const [headerT1FontSize, setHeaderT1FontSize] = React.useState(deviceInfo.isPhone ? 12 : 29);
+  const [headerT2FontSize, setHeaderT2FontSize] = React.useState(deviceInfo.isPhone ? 12 : 29);
   const sharedHeaderFontSize = Math.min(headerT1FontSize, headerT2FontSize);
 
   // Reset scroll to top immediately on mount to prevent jumps
@@ -365,7 +365,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
               value={team1Name} 
               onChange={(e) => updateTeamData(e.target.value.toUpperCase(), team1Players, team2Name, team2Players)}
               onFocus={(e) => e.target.select()}
-              className="w-full bg-black/40 border-2 rounded-2xl px-6 py-4 text-2xl font-black text-slate-100 focus:outline-none uppercase transition-all shadow-xl placeholder:text-white/10" 
+              className="w-full bg-black border-2 rounded-2xl px-6 py-4 text-2xl font-black text-slate-100 focus:outline-none uppercase transition-all shadow-xl placeholder:text-white/10" 
               style={{ borderColor: player1.highlightColor }}
               placeholder="TEAM 1 NAME"
             />
@@ -389,7 +389,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                       updateTeamData(team1Name, newPlayers, team2Name, team2Players);
                     }}
                     onFocus={(e) => e.target.select()}
-                    className="flex-1 bg-black/50 border rounded-xl px-4 py-2 text-slate-100 focus:outline-none uppercase font-bold transition-all"
+                    className="flex-1 bg-black border rounded-xl px-4 py-2 text-slate-100 focus:outline-none uppercase font-bold transition-all"
                     style={{ borderColor: player1.highlightColor + '22' }}
                     placeholder={`PLAYER ${idx + 1}`}
                   />
@@ -399,35 +399,39 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                         const newPlayers = team1Players.filter((_, i) => i !== idx);
                         updateTeamData(team1Name, newPlayers, team2Name, team2Players);
                       }}
-                      className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                      className="p-3 text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-xl transition-all relative left-[-5vw]"
                     >
-                      <X className="w-5 h-5" />
+                      <Trash2 style={{ width: deviceInfo.isPhone ? '4.5vw' : '1.2vw', height: deviceInfo.isPhone ? '4.5vw' : '1.2vw' }} />
                     </button>
                   </Tooltip>
                 </div>
               ))}
-              <Tooltip text="Add New Player to Team 1" position="top">
-                <button 
-                  onClick={() => updateTeamData(team1Name, [...team1Players, ''], team2Name, team2Players)}
-                  className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
-                  style={{ 
-                    borderColor: player1.highlightColor + '33', 
-                    color: player1.highlightColor,
-                    backgroundColor: 'transparent'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = player1.highlightColor + '11';
-                    e.currentTarget.style.borderColor = player1.highlightColor + '66';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.borderColor = player1.highlightColor + '33';
-                  }}
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Player
-                </button>
-              </Tooltip>
+              <div className="flex gap-3">
+                <div className="w-10 opacity-0" aria-hidden="true" />
+                <Tooltip text="Add New Player to Team 1" position="top" className="flex-1">
+                  <button 
+                    onClick={() => updateTeamData(team1Name, [...team1Players, ''], team2Name, team2Players)}
+                    className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
+                    style={{ 
+                      borderColor: player1.highlightColor + '33', 
+                      color: player1.highlightColor,
+                      backgroundColor: 'transparent'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = player1.highlightColor + '11';
+                      e.currentTarget.style.borderColor = player1.highlightColor + '66';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.borderColor = player1.highlightColor + '33';
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Player
+                  </button>
+                </Tooltip>
+                <div className="w-[44px] opacity-0" aria-hidden="true" />
+              </div>
             </div>
           </div>
         </div>
@@ -443,7 +447,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
               value={team2Name} 
               onChange={(e) => updateTeamData(team1Name, team1Players, e.target.value.toUpperCase(), team2Players)}
               onFocus={(e) => e.target.select()}
-              className="w-full bg-black/40 border-2 rounded-2xl px-6 py-4 text-2xl font-black text-slate-100 focus:outline-none uppercase transition-all shadow-xl placeholder:text-white/10" 
+              className="w-full bg-black border-2 rounded-2xl px-6 py-4 text-2xl font-black text-slate-100 focus:outline-none uppercase transition-all shadow-xl placeholder:text-white/10" 
               style={{ borderColor: player2.highlightColor }}
               placeholder="TEAM 2 NAME"
             />
@@ -467,7 +471,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                       updateTeamData(team1Name, team1Players, team2Name, newPlayers);
                     }}
                     onFocus={(e) => e.target.select()}
-                    className="flex-1 bg-black/50 border rounded-xl px-4 py-2 text-slate-100 focus:outline-none uppercase font-bold transition-all"
+                    className="flex-1 bg-black border rounded-xl px-4 py-2 text-slate-100 focus:outline-none uppercase font-bold transition-all"
                     style={{ borderColor: player2.highlightColor + '22' }}
                     placeholder={`PLAYER ${idx + 1}`}
                   />
@@ -477,35 +481,39 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                         const newPlayers = team2Players.filter((_, i) => i !== idx);
                         updateTeamData(team1Name, team1Players, team2Name, newPlayers);
                       }}
-                      className="p-3 text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                      className="p-3 text-red-500 hover:text-red-600 hover:bg-red-500/10 rounded-xl transition-all relative left-[-5vw]"
                     >
-                      <X className="w-5 h-5" />
+                      <Trash2 style={{ width: deviceInfo.isPhone ? '4.5vw' : '1.2vw', height: deviceInfo.isPhone ? '4.5vw' : '1.2vw' }} />
                     </button>
                   </Tooltip>
                 </div>
               ))}
-              <Tooltip text="Add New Player to Team 2" position="top">
-                <button 
-                  onClick={() => updateTeamData(team1Name, team1Players, team2Name, [...team2Players, ''])}
-                  className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
-                  style={{ 
-                    borderColor: player2.highlightColor + '33', 
-                    color: player2.highlightColor,
-                    backgroundColor: 'transparent'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = player2.highlightColor + '11';
-                    e.currentTarget.style.borderColor = player2.highlightColor + '66';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.borderColor = player2.highlightColor + '33';
-                  }}
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Player
-                </button>
-              </Tooltip>
+              <div className="flex gap-3">
+                <div className="w-10 opacity-0" aria-hidden="true" />
+                <Tooltip text="Add New Player to Team 2" position="top" className="flex-1">
+                  <button 
+                    onClick={() => updateTeamData(team1Name, team1Players, team2Name, [...team2Players, ''])}
+                    className="w-full py-4 border-2 border-dashed rounded-2xl text-slate-500 transition-all flex items-center justify-center gap-2 text-sm font-black uppercase tracking-widest"
+                    style={{ 
+                      borderColor: player2.highlightColor + '33', 
+                      color: player2.highlightColor,
+                      backgroundColor: 'transparent'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = player2.highlightColor + '11';
+                      e.currentTarget.style.borderColor = player2.highlightColor + '66';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.borderColor = player2.highlightColor + '33';
+                    }}
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Player
+                  </button>
+                </Tooltip>
+                <div className="w-[44px] opacity-0" aria-hidden="true" />
+              </div>
             </div>
           </div>
         </div>
@@ -526,7 +534,7 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
           />
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Session schedule and results</p>
         </div>
-        <div className="bg-black/40 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
+        <div className="bg-black border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse min-w-[150px] table-fixed">
               <colgroup>
@@ -540,31 +548,31 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
               </colgroup>
               <thead>
                 <tr className="bg-blue-600/20 border-b border-slate-800">
-                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>MATCH (V5)</th>
-                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '9px' : '22px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>MATCH (V5)</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '12px' : '29px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
                     <FittingText 
                       text={team1Name || 'TEAM A'} 
-                      maxFontSize={deviceInfo.isPhone ? 6 : 10} 
-                      minFontSize={4} 
+                      maxFontSize={deviceInfo.isPhone ? 12 : 29} 
+                      minFontSize={6} 
                       className="justify-start" 
                       fontSize={sharedHeaderFontSize}
                       onFontSizeCalculated={setHeaderT1FontSize}
                     />
                   </th>
-                  <th className="py-2 font-bold uppercase text-center" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>VS</th>
-                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
+                  <th className="py-2 font-bold uppercase text-center" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '9px' : '22px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>VS</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '12px' : '29px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>
                     <FittingText 
                       text={team2Name || 'TEAM B'} 
-                      maxFontSize={deviceInfo.isPhone ? 6 : 10} 
-                      minFontSize={4} 
+                      maxFontSize={deviceInfo.isPhone ? 12 : 29} 
+                      minFontSize={6} 
                       className="justify-start" 
                       fontSize={sharedHeaderFontSize}
                       onFontSizeCalculated={setHeaderT2FontSize}
                     />
                   </th>
-                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Last Result</th>
-                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Clock</th>
-                  <th className="py-2 font-bold uppercase text-right" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '4px' : '10px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Action</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '9px' : '22px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Last Result</th>
+                  <th className="py-2 font-bold uppercase" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '9px' : '22px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Clock</th>
+                  <th className="py-2 font-bold uppercase text-right" style={{ paddingLeft: deviceInfo.isPhone ? '0' : '1.5rem', paddingRight: deviceInfo.isPhone ? '0' : '1.5rem', fontSize: deviceInfo.isPhone ? '9px' : '22px', letterSpacing: deviceInfo.isPhone ? '-0.05em' : '0.1em' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -606,25 +614,25 @@ export const TeamsView: React.FC<TeamsViewProps> = ({
                     })}
                     {/* Totals Row */}
                     <tr className="bg-slate-800/80 border-t-2 border-slate-700 font-black">
-                      <td className="py-3 uppercase text-emerald-500" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '7px' : '10px', letterSpacing: '0.2em' }}>Total Score</td>
+                      <td className="py-3 uppercase text-emerald-500" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '11px' : '15px', letterSpacing: '0.2em' }}>Total Score</td>
                       <td className="py-3" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
                         <div className="flex flex-col">
-                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '18px' : '24px' }}>{teamTotals.t1}</span>
-                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '7px' : '8px' }}>{team1Name}</span>
+                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '27px' : '36px' }}>{teamTotals.t1}</span>
+                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '11px' : '12px' }}>{team1Name}</span>
                         </div>
                       </td>
-                      <td className="py-3 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '10px' : '16px' }}>SUM</td>
+                      <td className="py-3 text-center text-slate-700 font-black" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem', fontSize: deviceInfo.isPhone ? '15px' : '24px' }}>SUM</td>
                       <td className="py-3" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
                         <div className="flex flex-col">
-                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '18px' : '24px' }}>{teamTotals.t2}</span>
-                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '7px' : '8px' }}>{team2Name}</span>
+                          <span className="text-emerald-400 tabular-nums" style={{ fontSize: deviceInfo.isPhone ? '27px' : '36px' }}>{teamTotals.t2}</span>
+                          <span className="text-slate-500 uppercase tracking-tighter" style={{ fontSize: deviceInfo.isPhone ? '11px' : '12px' }}>{team2Name}</span>
                         </div>
                       </td>
                       <td colSpan={3} className="py-3 bg-slate-900/50" style={{ paddingLeft: deviceInfo.isPhone ? '8px' : '1.5rem', paddingRight: deviceInfo.isPhone ? '8px' : '1.5rem' }}>
                         <div className="flex items-center justify-end" style={{ gap: deviceInfo.isPhone ? '8px' : '16px' }}>
                           <div className="flex flex-col items-end">
-                            <span className="text-slate-500 uppercase font-bold" style={{ fontSize: deviceInfo.isPhone ? '7px' : '10px' }}>Overall Lead</span>
-                            <span className="font-black text-slate-100" style={{ fontSize: deviceInfo.isPhone ? '10px' : '14px' }}>
+                            <span className="text-slate-500 uppercase font-bold" style={{ fontSize: deviceInfo.isPhone ? '11px' : '15px' }}>Overall Lead</span>
+                            <span className="font-black text-slate-100" style={{ fontSize: deviceInfo.isPhone ? '15px' : '21px' }}>
                               {teamTotals.t1 === teamTotals.t2 ? 'TIED' : 
                                teamTotals.t1 > teamTotals.t2 ? `${team1Name} (+${teamTotals.t1 - teamTotals.t2})` : 
                                `${team2Name} (+${teamTotals.t2 - teamTotals.t1})`}

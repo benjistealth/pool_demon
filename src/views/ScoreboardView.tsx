@@ -96,7 +96,7 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
           className="relative flex items-center justify-between w-full h-[var(--skull-height)]"
         >
           {/* Left Region: Centered Team Name */}
-          <div className="flex-1 h-full min-w-0 pointer-events-none pl-[2vw]">
+          <div className="flex-1 h-full min-w-0 pointer-events-none">
             {team1Name && (
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
@@ -121,7 +121,7 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
             className="grid justify-center justify-items-center shrink-0"
             style={{ 
               gridTemplateColumns: isTwoColumn ? 'auto auto' : 'auto',
-              gap: deviceInfo.isDesktop ? '1.25rem' : (deviceInfo.isPhone ? '0.5rem' : '1rem'),
+              gap: deviceInfo.isDesktop ? '1.5vw' : (deviceInfo.isPhone ? '1vw' : '1.25vw'),
               maxWidth: '85vw'
             }}
           >
@@ -164,7 +164,7 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
           </div>
 
           {/* Right Region: Centered Team Name */}
-          <div className="flex-1 h-full min-w-0 pointer-events-none pr-[2vw]">
+          <div className="flex-1 h-full min-w-0 pointer-events-none">
             {team2Name && (
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}

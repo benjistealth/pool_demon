@@ -80,14 +80,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         }}
       >
         <h2 className="text-4xl font-black uppercase tracking-tight text-white">Settings</h2>
-        <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Customize your scoring experience</p>
       </div>
 
       <div className="space-y-12">
         <section className="space-y-6">
           <h3 
-            className="text-[10px] font-black uppercase tracking-widest pb-2 border-b-2"
-            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`, color: player1.highlightColor }}
+            className="text-[30px] font-black uppercase tracking-widest pb-2 border-b-2 text-white"
+            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
           >
             Player Customization
           </h3>
@@ -98,7 +97,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             {[player1, player2].map((p, idx) => (
               <div 
                 key={p.id} 
-                className="relative p-8 rounded-[32px] border-2 space-y-6 shadow-xl transition-all duration-500 bg-black/40 backdrop-blur-sm"
+                className="relative p-8 rounded-[32px] border-2 space-y-6 shadow-xl transition-all duration-500 bg-black"
                 style={{ 
                   borderColor: p.highlightColor,
                   boxShadow: `0 20px 50px -20px ${p.highlightColor}33`,
@@ -148,19 +147,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <section className="space-y-6">
           <h3 
-            className="text-[10px] font-black uppercase tracking-widest pb-2 border-b-2"
-            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`, color: player1.highlightColor }}
+            className="text-[30px] font-black uppercase tracking-widest pb-2 border-b-2 text-white"
+            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
           >
             Master Match Clock
           </h3>
           <div 
-            className="bg-black/40 backdrop-blur-sm border-2 rounded-[32px] p-8 space-y-8 shadow-xl" 
+            className="bg-black border-2 rounded-[32px] p-8 space-y-8 shadow-xl" 
             style={{ borderColor: player1.highlightColor }}
           >
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Enable Match Clock</p>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">A master countdown for the entire match.</p>
+                <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">A master countdown for the entire match.</p>
               </div>
               <Tooltip text={isMatchClockEnabled ? "Disable Match Clock" : "Enable Match Clock"} position="left">
                 <button 
@@ -217,19 +216,19 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <section className="space-y-6">
           <h3 
-            className="text-[10px] font-black uppercase tracking-widest pb-2 border-b-2"
-            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`, color: player2.highlightColor }}
+            className="text-[30px] font-black uppercase tracking-widest pb-2 border-b-2 text-white"
+            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
           >
             Shot Clock Settings
           </h3>
           <div 
-            className="bg-black/40 backdrop-blur-sm border-2 rounded-[32px] p-8 space-y-8 shadow-xl" 
+            className="bg-black border-2 rounded-[32px] p-8 space-y-8 shadow-xl" 
             style={{ borderColor: player2.highlightColor }}
           >
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Enable Shot Clock</p>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Toggle the visibility and timer on the scoreboard.</p>
+                <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">Toggle the visibility and timer on the scoreboard.</p>
               </div>
               <Tooltip text={isShotClockEnabled ? "Disable Shot Clock" : "Enable Shot Clock"} position="left">
                 <button 
@@ -277,14 +276,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <section className="space-y-6">
           <h3 
-            className="text-[10px] font-black uppercase tracking-widest pb-2 border-b-2"
-            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`, color: player1.highlightColor }}
+            className="text-[30px] font-black uppercase tracking-widest pb-2 border-b-2 text-white"
+            style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
           >
             System Settings
           </h3>
           <div className="grid grid-cols-1 gap-6">
             <div 
-              className="bg-black/40 backdrop-blur-sm border-2 rounded-[1.66vw] p-[0.4vw] flex flex-col items-center justify-between gap-6 shadow-xl"
+              className="bg-black border-2 rounded-[1.66vw] p-[0.4vw] flex flex-col items-center justify-between gap-6 shadow-xl"
               style={{ 
                 borderColor: player1.highlightColor,
                 flexDirection: deviceInfo.isPhone ? 'column' : 'row'
@@ -293,16 +292,16 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
               <div className="space-y-1" style={{ textAlign: deviceInfo.isPhone ? 'center' : 'left' }}>
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">System Diagnostics</p>
                 <div className="space-y-1">
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                  <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">
                     Diagonal: <span className="text-white">{deviceInfo.estimatedInches.toFixed(1)}"</span>
                   </p>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                  <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">
                     Resolution: <span className="text-white">{deviceInfo.width} x {deviceInfo.height}</span>
                   </p>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                  <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">
                     UA Mobile: <span className="text-white">{navigator.userAgent.toLowerCase().includes('mobi') ? 'YES' : 'NO'}</span>
                   </p>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">
+                  <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">
                     Touch: <span className="text-white">{'ontouchstart' in window || navigator.maxTouchPoints > 0 ? 'YES' : 'NO'}</span>
                   </p>
                 </div>
@@ -319,7 +318,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             </div>
 
             <div 
-              className="bg-black/40 backdrop-blur-sm border-2 rounded-[32px] p-8 flex flex-col items-center justify-between gap-6 shadow-xl"
+              className="bg-black border-2 rounded-[32px] p-8 flex flex-col items-center justify-between gap-6 shadow-xl"
               style={{ 
                 borderColor: player1.highlightColor,
                 flexDirection: deviceInfo.isPhone ? 'column' : 'row'
@@ -327,7 +326,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
             >
               <div className="space-y-1" style={{ textAlign: deviceInfo.isPhone ? 'center' : 'left' }}>
                 <p className="text-xl font-black text-slate-200 uppercase tracking-tight">Restore Default Settings</p>
-                <p className="text-xs text-slate-500 font-bold uppercase tracking-widest">Resets all color selections to default.</p>
+                <p className="text-[6px] text-slate-500 font-bold uppercase tracking-widest">Resets all color selections to default.</p>
               </div>
               <Tooltip text="Reset Colors to Default" position="top">
                 <button 
@@ -344,13 +343,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
 
         <section className="pt-12">
           <div 
-            className="bg-slate-900/80 backdrop-blur-md border border-slate-800 rounded-3xl p-8 space-y-4 shadow-xl"
+            className="bg-black border border-slate-800 rounded-3xl p-8 space-y-4 shadow-xl"
           >
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-between text-[6px] font-bold uppercase tracking-widest">
               <span className="text-slate-500">Version</span>
               <span className="font-mono" style={{ color: player1.highlightColor }}>1.0.0-pro</span>
             </div>
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest">
+            <div className="flex items-center justify-between text-[6px] font-bold uppercase tracking-widest">
               <span className="text-slate-500">Developer</span>
               <span className="font-mono" style={{ color: player2.highlightColor }}>Stealthton</span>
             </div>

@@ -56,18 +56,25 @@ export const Navigation: React.FC<NavigationProps> = ({
     <motion.nav 
       initial={false}
       animate={{ 
-        y: (isKeyboardOpen && (deviceInfo.isPhone || (deviceInfo.isTablet && view === 'teams'))) ? (deviceInfo.isPhone ? -54 : -82) : 0,
-        opacity: isNavVisible ? 1 : 0,
+        y: isNavVisible 
+          ? ((isKeyboardOpen && (deviceInfo.isPhone || (deviceInfo.isTablet && view === 'teams'))) ? (deviceInfo.isPhone ? -54 : -82) : 0)
+          : 'calc(-1 * var(--nav-height) + 1vh)',
+        opacity: 1,
         pointerEvents: isNavVisible ? 'auto' : 'none'
       }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 bg-black/20 z-[9999] flex items-center justify-between px-4 nav-zoom backdrop-blur-md"
+      className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-4 nav-zoom nav-blur-override"
       style={{ 
         paddingLeft: '0.5vh',
         paddingRight: '0.5vh',
         height: 'var(--nav-height)',
         borderBottom: '2px solid',
-        borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`
+        borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`,
+        boxShadow: `
+          -25vw 10px 30px -5px ${player1.highlightColor}44, 
+          25vw 10px 30px -5px ${player2.highlightColor}44,
+          0 10px 15px -3px rgba(0, 0, 0, 0.4)
+        `
       }}
     >
       <div className="flex items-center shrink-0" style={{ gap: 'var(--nav-gap)' }}>

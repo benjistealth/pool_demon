@@ -21,7 +21,7 @@
   --nav-icon-size: 9.72vh;
   --devil-head-size: 13vh;
   --nav-gap: 1vh;
-  --logo-height: 10vh;
+  --logo-height: 11vh;
   --nav-height: 12vh;
   --content-padding: 10vh;
   --timer-w: 3.3vw;
@@ -58,6 +58,12 @@
 
 ::-webkit-scrollbar-thumb {
   @apply bg-slate-800 rounded-full hover:bg-slate-700 transition-colors;
+}
+
+.nav-blur-override {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
 .vertical-text {
