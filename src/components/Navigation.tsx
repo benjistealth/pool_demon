@@ -5,7 +5,8 @@ import { Player } from '../types';
 import { SandTimer } from './SandTimer';
 import { Tooltip } from './Tooltip';
 import devilHeadImg from '../8_ball_devil_head.png';
-const poolDemonImg = '/favicon.png';
+import bloodyPoolDemonImg from '../bloody_pool_demon.png';
+const poolDemonImg = bloodyPoolDemonImg;
 
 interface NavigationProps {
   view: string;
@@ -56,14 +57,12 @@ export const Navigation: React.FC<NavigationProps> = ({
     <motion.nav 
       initial={false}
       animate={{ 
-        y: isNavVisible 
-          ? ((isKeyboardOpen && (deviceInfo.isPhone || (deviceInfo.isTablet && view === 'teams'))) ? (deviceInfo.isPhone ? -54 : -82) : 0)
-          : 'calc(-1 * var(--nav-height) + 1vh)',
+        y: isNavVisible ? 0 : 'calc(-1 * var(--nav-height) + 1vh)',
         opacity: 1,
         pointerEvents: isNavVisible ? 'auto' : 'none'
       }}
       transition={{ duration: 0.4, ease: "easeInOut" }}
-      className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-4 nav-zoom nav-blur-override"
+      className="fixed top-0 left-0 right-0 z-[9999] flex items-center justify-between px-4 responsive-zoom nav-blur-override"
       style={{ 
         paddingLeft: '0.5vh',
         paddingRight: '0.5vh',
@@ -111,7 +110,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center shrink overflow-hidden" style={{ gap: 'var(--nav-gap)' }}>
+      <div className="flex items-center shrink-0" style={{ gap: 'var(--nav-gap)' }}>
         {(isMatchClockEnabled || isShotClockEnabled) && (
           <div className="flex items-center" style={{ gap: 'var(--nav-gap)' }}>
             {isMatchClockEnabled && (
@@ -180,7 +179,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             style={{
               width: 'var(--nav-btn-size)',
               height: 'var(--nav-btn-size)',
-              borderRadius: deviceInfo.isDesktop ? '16px' : '4px'
+              borderRadius: '16px'
             }}
           >
             {isFullscreen ? 
@@ -196,7 +195,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             style={{
               width: 'var(--nav-btn-size)',
               height: 'var(--nav-btn-size)',
-              borderRadius: deviceInfo.isDesktop ? '16px' : '4px',
+              borderRadius: '16px',
               backgroundColor: view === 'scoreboard' ? `${player1.highlightColor}33` : undefined
             }}
           >
@@ -225,7 +224,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             style={{
               width: 'var(--nav-btn-size)',
               height: 'var(--nav-btn-size)',
-              borderRadius: deviceInfo.isDesktop ? '16px' : '4px',
+              borderRadius: '16px',
               backgroundColor: view === 'teams' ? `${player1.highlightColor}33` : undefined
             }}
           >
@@ -239,7 +238,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             style={{
               width: 'var(--nav-btn-size)',
               height: 'var(--nav-btn-size)',
-              borderRadius: deviceInfo.isDesktop ? '16px' : '4px',
+              borderRadius: '16px',
               backgroundColor: view === 'settings' ? `${player1.highlightColor}33` : undefined
             }}
           >

@@ -21,18 +21,18 @@
   --nav-icon-size: 9.72vh;
   --devil-head-size: 13vh;
   --nav-gap: 1vh;
-  --logo-height: 11vh;
-  --nav-height: 12vh;
+  --logo-height: 13.2vh;
+  --nav-height: 14.5vh;
   --content-padding: 10vh;
-  --timer-w: 3.3vw;
-  --timer-h: 8.3vh;
-  --timer-font: 3.5vh;
+  --timer-w: 5.45vw;
+  --timer-h: 13.8vh;
+  --timer-font: 4.2vh;
   --eye-top: calc(35% - 2vh);
   --eye-gap: calc(10% + 4vw);
   --score-size: min(13vw, 27vh);
   --finish-bottom: calc(15% - 8vh);
   --finish-scale: 4.0;
-  --skull-height: 77vh;
+  --skull-height: min(77vh, 45vw);
 }
 
 @layer base {

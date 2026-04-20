@@ -1003,11 +1003,9 @@ export default function App() {
     <div 
       className={`relative min-h-screen text-slate-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden bg-transparent ${(forcedMode && forcedMode !== 'auto') ? `force-${forcedMode}` : ''}`}
       style={{
-        '--sidebar-width': deviceInfo.isDesktop ? '120px' : (deviceInfo.isPhone ? '20px' : '60px'),
-        '--gameplay-width': deviceInfo.isDesktop ? 'min(1100px, calc(100vw - 240px))' : (deviceInfo.isPhone ? 'calc(100vw - 40px)' : 'calc(100vw - 120px)'),
-        '--circle-offset': deviceInfo.isDesktop 
-          ? 'calc((100vw - min(1100px, calc(100vw - 240px))) / 4 + 4.5rem)' 
-          : 'calc(100% + 2rem)'
+        '--sidebar-width': '120px',
+        '--gameplay-width': 'min(1100px, calc(100vw - 240px))',
+        '--circle-offset': 'calc((100vw - min(1100px, calc(100vw - 240px))) / 4 + 4.5rem)'
       } as React.CSSProperties}
     >
       {/* Backdrop Image Layer (User's Fire Frame) */}
@@ -1223,10 +1221,10 @@ export default function App() {
                 style={{ 
                   borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1`,
                   boxShadow: `0 0 50px ${player1.highlightColor}11`,
-                  padding: deviceInfo.isPhone ? '1.5rem' : '2.5rem',
-                  borderRadius: deviceInfo.isPhone ? '30px' : '40px',
-                  maxWidth: deviceInfo.isPhone ? '100%' : '42rem',
-                  gap: deviceInfo.isPhone ? '1.5rem' : '2.5rem',
+                  padding: '2.5rem',
+                  borderRadius: '40px',
+                  maxWidth: '42rem',
+                  gap: '2.5rem',
                   display: 'flex',
                   flexDirection: 'column'
                 }}
@@ -1237,27 +1235,27 @@ export default function App() {
                       className="rounded-full flex items-center justify-center" 
                       style={{ 
                         backgroundColor: `${player1.highlightColor}11`,
-                        padding: deviceInfo.isPhone ? '0.75rem' : '1rem'
+                        padding: '1rem'
                       }}
                     >
                       <Trophy 
                         style={{ 
                           color: player1.highlightColor,
-                          width: deviceInfo.isPhone ? '2rem' : '3rem',
-                          height: deviceInfo.isPhone ? '2rem' : '3rem'
+                          width: '3rem',
+                          height: '3rem'
                         }} 
                       />
                     </div>
                   </div>
                   <h2 
                     className="font-black uppercase tracking-tighter text-white"
-                    style={{ fontSize: deviceInfo.isPhone ? '1.875rem' : '3rem' }}
+                    style={{ fontSize: '3rem' }}
                   >
                     Team Totals
                   </h2>
                   <p 
                     className="text-slate-500 font-bold uppercase tracking-widest"
-                    style={{ fontSize: deviceInfo.isPhone ? '10px' : '0.75rem' }}
+                    style={{ fontSize: '0.75rem' }}
                   >
                     Final Session Results
                   </p>
@@ -1265,10 +1263,10 @@ export default function App() {
 
                 <div 
                   className="grid grid-cols-2 items-center"
-                  style={{ gap: deviceInfo.isPhone ? '1rem' : '2rem' }}
+                  style={{ gap: '2rem' }}
                 >
-                  <div className="space-y-2" style={{ gap: deviceInfo.isPhone ? '0.5rem' : '1rem' }}>
-                    <div style={{ height: deviceInfo.isPhone ? '1.5rem' : '2rem' }}>
+                  <div className="space-y-2" style={{ gap: '1rem' }}>
+                    <div style={{ height: '2rem' }}>
                       <FittingText 
                         text={team1Name || 'TEAM 1'} 
                         maxFontSize={24} 
@@ -1281,13 +1279,13 @@ export default function App() {
                     </div>
                     <p 
                       className="font-black text-white tabular-nums"
-                      style={{ fontSize: deviceInfo.isPhone ? '3rem' : '6rem' }}
+                      style={{ fontSize: '6rem' }}
                     >
                       {teamTotals.t1}
                     </p>
                   </div>
-                  <div className="space-y-2" style={{ gap: deviceInfo.isPhone ? '0.5rem' : '1rem' }}>
-                    <div style={{ height: deviceInfo.isPhone ? '1.5rem' : '2rem' }}>
+                  <div className="space-y-2" style={{ gap: '1rem' }}>
+                    <div style={{ height: '2rem' }}>
                       <FittingText 
                         text={team2Name || 'TEAM 2'} 
                         maxFontSize={24} 
@@ -1300,7 +1298,7 @@ export default function App() {
                     </div>
                     <p 
                       className="font-black text-white tabular-nums"
-                      style={{ fontSize: deviceInfo.isPhone ? '3rem' : '6rem' }}
+                      style={{ fontSize: '6rem' }}
                     >
                       {teamTotals.t2}
                     </p>
@@ -1317,9 +1315,9 @@ export default function App() {
                     style={{ 
                       backgroundImage: `linear-gradient(to right, ${player1.highlightColor}, ${player2.highlightColor})`,
                       boxShadow: `0 10px 20px ${player1.highlightColor}33`,
-                      height: deviceInfo.isPhone ? '3.5rem' : '5rem',
-                      borderRadius: deviceInfo.isPhone ? '1rem' : '1.5rem',
-                      fontSize: deviceInfo.isPhone ? '1.125rem' : '1.5rem'
+                      height: '5rem',
+                      borderRadius: '1.5rem',
+                      fontSize: '1.5rem'
                     }}
                   >
                     Close Results
@@ -1333,46 +1331,7 @@ export default function App() {
       {/* Navigation Bar Spacing for history view */}
       {view !== 'scoreboard' && <div style={{ height: 'var(--nav-height)' }} />}
 
-      {/* Quick Actions Floating Bar (Mobile) */}
-      <AnimatePresence>
-        {view !== 'scoreboard' && deviceInfo.isPhone && !deviceInfo.isLandscape && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/90 backdrop-blur-xl border-2 p-2 rounded-2xl shadow-2xl z-[100] bar-zoom pointer-events-auto"
-              style={{ borderImage: `linear-gradient(to right, ${player1.highlightColor} 50%, ${player2.highlightColor} 50%) 1` }}
-            >
-            <Tooltip text="Scoreboard" position="top">
-              <button 
-                onClick={navigateToScoreboard}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'scoreboard' ? 'text-slate-950' : 'text-slate-400'}`}
-                style={view === 'scoreboard' ? { backgroundColor: player1.highlightColor } : {}}
-              >
-                Score
-              </button>
-            </Tooltip>
-            <Tooltip text="Teams" position="top">
-              <button 
-                onClick={() => setView('teams')}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'teams' ? 'text-slate-950' : 'text-slate-400'}`}
-                style={view === 'teams' ? { backgroundColor: player1.highlightColor } : {}}
-              >
-                Teams
-              </button>
-            </Tooltip>
-            <Tooltip text="Settings" position="top">
-              <button 
-                onClick={() => setView('settings')}
-                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${view === 'settings' ? 'text-slate-950' : 'text-slate-400'}`}
-                style={view === 'settings' ? { backgroundColor: player2.highlightColor } : {}}
-              >
-                Settings
-              </button>
-            </Tooltip>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Quick Actions Floating Bar (Mobile) - REMOVED for full adaptability without mobile overrides */}
       </div>
     </div>
   );

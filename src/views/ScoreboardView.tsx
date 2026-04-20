@@ -120,8 +120,8 @@ export const ScoreboardView: React.FC<ScoreboardViewProps> = ({
           <div 
             className="grid justify-center justify-items-center shrink-0"
             style={{ 
-              gridTemplateColumns: isTwoColumn ? 'auto auto' : 'auto',
-              gap: deviceInfo.isDesktop ? '1.5vw' : (deviceInfo.isPhone ? '1vw' : '1.25vw'),
+              gridTemplateColumns: 'auto auto',
+              gap: '1.5vw',
               maxWidth: '85vw'
             }}
           >

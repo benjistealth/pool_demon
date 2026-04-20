@@ -78,17 +78,16 @@ export const SandTimer: React.FC<SandTimerProps> = ({ current, total, color, lab
       </div>
       <div className="flex flex-col justify-center">
         <span 
-          className="font-black font-gothic leading-none tracking-tight" 
+          className="font-black font-gothic leading-none tracking-tight text-white" 
           style={{ 
-            color,
             fontSize: 'var(--timer-font)'
           }}
         >
           {formattedValue}
         </span>
         <span 
-          className="uppercase tracking-widest text-slate-500 font-black"
-          style={{ fontSize: '0.7vh' }}
+          className="uppercase tracking-widest text-white font-black"
+          style={{ fontSize: '1.5vh' }}
         >
           {label}
         </span>
