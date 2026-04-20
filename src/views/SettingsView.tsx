@@ -27,9 +27,9 @@ interface SettingsViewProps {
   pauseTimer: () => void;
   setShowRestoreDefaultsConfirm: (show: boolean) => void;
   deviceInfo: { 
-    isPhone: boolean; 
-    isTablet: boolean; 
-    isDesktop: boolean; 
+    isPhone: false; 
+    isTablet: false; 
+    isDesktop: true; 
     isLandscape: boolean; 
     estimatedInches: number;
     forcedMode: 'auto' | 'phone' | 'tablet' | 'desktop';
